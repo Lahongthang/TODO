@@ -519,6 +519,10 @@ ul.todo-list {
   border-color: rgba(175, 47, 47, 0.3);
 }
 
+.selected {
+  border-color: rgba(175, 47, 47, 0.3);
+}
+
 .filters.colorFilters .color-block {
   display: inline-block;
   width: 20px;

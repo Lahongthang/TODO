@@ -6,7 +6,9 @@ const initialState = {
     entities: {
         data: [],
         links: {},
-        meta: {}
+        meta: {
+            links: []
+        }
     }
 }
 
@@ -115,6 +117,19 @@ export default function todosReducer(state = initialState, action) {
                 entities: action.payload
             }
         }
+        case 'todos/todosNotFound': {
+            return {
+                ...state,
+                entities: {
+                    data: [],
+                    links: {},
+                    meta: {
+                        ...state.entities.meta,
+                        links: []
+                    }
+                }
+            }
+        }
         default:
         return state
     }
@@ -151,9 +166,11 @@ export const todosLoaded = (todos) => ({
     payload: todos
 })
 
+export const todosNotFound = () => ({type: 'todos/todosNotFound'})
+
 // Thunk function
 
-// get all
+// filters
 export const fetchTodos = ({status, colors}) => async (dispatch) => {
     dispatch(todosLoading())
     const tempUrl = `http://localhost:8000/api/todos?pageSize=3`
@@ -161,7 +178,7 @@ export const fetchTodos = ({status, colors}) => async (dispatch) => {
     if (status === undefined && colors === undefined) {
         url = tempUrl
     } else {
-        url = tempUrl + `&status=${status}&color=${colors}`
+        url = tempUrl + `&status=${status}&colors=${colors}`
     }
     await fetch(url)
         .then(response => response.json())
@@ -169,7 +186,7 @@ export const fetchTodos = ({status, colors}) => async (dispatch) => {
             console.log('result: ', result)
             if (result.message) {
                 console.log('NOT FOUND!')
-                dispatch(todosLoaded({data: [], links: {}}))
+                dispatch(todosNotFound())
             } else {
                 dispatch(todosLoaded(result))
             }
@@ -231,6 +248,20 @@ export const markOrClear = (todoIds, action) => async dispatch => {
     dispatch(action)
 }
 
+//pagination
+export const pagination = link => async dispatch => {
+    const url = link + `&pageSize=3`
+    await fetch(url)
+        .then(response => response.json())
+        .then(result => {
+            if (result.message) {
+                dispatch(todosNotFound())
+            } else {
+                dispatch(todosLoaded(result))
+            }
+        })
+}
+
 
 //selectors
 const selectEntities = state => state.todos.entities
@@ -263,4 +294,14 @@ export const selectTodoCompletedIds = createSelector(
 export const selectLinks = createSelector(
     selectEntities,
     entities => entities.links
+)
+
+export const selectMeta = createSelector(
+    selectEntities,
+    entities => entities.meta
+)
+
+export const selectMetaLinks = createSelector(
+    selectMeta,
+    meta => meta.links
 )
