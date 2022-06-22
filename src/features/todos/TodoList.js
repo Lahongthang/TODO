@@ -11,9 +11,7 @@ const TodoList = () => {
     })
 
     return (
-        <>
-            <ul className="todo-list">{renderedListItem}</ul>
-        </>
+        <ul className="todo-list">{renderedListItem}</ul>
     )
 }
 

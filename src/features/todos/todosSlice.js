@@ -74,28 +74,26 @@ export default function todosReducer(state = initialState, action) {
             }
         }
         case 'todos/allCompleted': {
-            const newEntities = { ...state.entities }
-            Object.values(newEntities).forEach((todo) => {
-                newEntities[todo.id] = {
-                ...todo,
-                completed: true
-                }
-            })
             return {
                 ...state,
-                entities: newEntities
+                entities: {
+                    ...state.entities,
+                    data: state.entities.data.map(todo => {
+                        return {
+                            ...todo,
+                            completed: true
+                        }
+                    })
+                }
             }
         }
         case 'todos/completedCleared': {
-            const newEntities = { ...state.entities }
-            Object.values(newEntities).forEach((todo) => {
-                if (todo.completed) {
-                delete newEntities[todo.id]
-                }
-            })
             return {
                 ...state,
-                entities: newEntities
+                entities: {
+                    ...state.entities,
+                    data: state.entities.data.filter(todo => !todo.completed)
+                }
             }
         }
         case 'todos/todosLoading': {
@@ -156,13 +154,13 @@ export const todosLoaded = (todos) => ({
 // Thunk function
 
 // get all
-export const fetchTodos = ({status, colors}) => async (dispatch) => {
+export const fetchTodos = ({status, colors, URL}) => async (dispatch) => {
     dispatch(todosLoading())
     let url
     if (status === undefined && colors === undefined) {
-        url = `http://localhost:8000/api/todos` 
+        url = `http://localhost:8000/api/todos?pageSize=3`
     } else {
-        url = `http://localhost:8000/api/todos?status=${status}&colors=${colors}` 
+        url = `http://localhost:8000/api/todos?pageSize=3&status=${status}&colors=${colors}` 
     }
     await fetch(url)
         .then(response => response.json())
@@ -214,6 +212,24 @@ export const deleteTodo = todoId => async dispatch => {
     dispatch(todoDeleted(todoId))
 }
 
+// mark all complete or clear all complete
+export const markOrClear = (todoIds, action) => async dispatch => {
+    console.log('aaaaaaaa: ', todoIds);
+    let url
+    if (action === 'mark') {
+        url = `http://localhost:8000/api/todos/mark-completed?ids=${todoIds}`
+        action = allTodosCompleted()
+    } else {
+        url = `http://localhost:8000/api/todos/clear-completed?ids=${todoIds}`
+        action = completedTodosCleared()
+    }
+    const response = await fetch(url)
+    if (!response.ok) {
+        throw new Error('failed!')
+    }
+    dispatch(action)
+}
+
 
 //selectors
 const selectEntities = state => state.todos.entities
@@ -231,4 +247,19 @@ export const selectTodoIds = createSelector(
 export const selectTodoById = todoId => createSelector(
     selectTodos,
     todos => todos.find(todo => todo.id === todoId)
+)
+
+export const selectTodosCompleted = createSelector(
+    selectTodos,
+    todos => todos.filter(todo => todo.completed)
+)
+
+export const selectTodoCompletedIds = createSelector(
+    selectTodosCompleted,
+    todoCompleted => todoCompleted.map(todo => todo.id)
+)
+
+export const selectLinks = createSelector(
+    selectEntities,
+    entities => entities.links
 )

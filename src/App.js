@@ -1,11 +1,8 @@
 import React from 'react'
-import { useEffect } from 'react'
-import {useSelector, useDispatch} from 'react-redux'
 import Header from './features/header/Header'
 import TodoList from './features/todos/TodoList'
+import Pagination from './features/todos/Pagination'
 import Footer from './features/footer/Footer'
-
-let isInitial = 0
 
 function App() {
 
@@ -22,6 +19,7 @@ function App() {
           <div className="todoapp">
             <Header />
             <TodoList />
+            <Pagination/>
             <Footer />
           </div>
         </section>
