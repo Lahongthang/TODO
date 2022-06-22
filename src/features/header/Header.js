@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { todoAdded } from '../todos/todosSlice'
+import { addTodo } from '../todos/todosSlice'
 
 const nextTodoId = todos => {
   const maxId = todos.reduce((maxId, todo) => Math.max(maxId, todo.id), -1)
@@ -8,10 +8,19 @@ const nextTodoId = todos => {
 }
 
 const Header = () => {
+  const dispatch = useDispatch()
   const [text, setText] = useState('')
 
   const handleChanged = (e) => {
     setText(e.target.value)
+  }
+
+  const handleKeyDown = e => {
+    if (e.which === 13 && text) {
+      const trimedText = text.trim()
+      setText('')
+      dispatch(addTodo(trimedText))
+    }
   }
 
   return (
@@ -22,6 +31,7 @@ const Header = () => {
         autoFocus={true}
         value={text}
         onChange={handleChanged}
+        onKeyDown={handleKeyDown}
       />
     </header>
   )

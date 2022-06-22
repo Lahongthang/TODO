@@ -9,7 +9,7 @@ import reportWebVitals from './reportWebVitals';
 import store from './store'
 import {fetchTodos} from './features/todos/todosSlice'
 
-store.dispatch(fetchTodos())
+store.dispatch(fetchTodos({}))
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

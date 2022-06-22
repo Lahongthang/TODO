@@ -1,14 +1,21 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { selectTodoById, updateTodo, todoToggled } from './todosSlice'
+import { selectTodoById, updateTodo, deleteTodo } from './todosSlice'
 import { ReactComponent as TimesSolid } from './times-solid.svg'
 import { availableColors, lowerCase } from '../filters/colors'
 
 const TodoListItem = ({ id }) => {
   const dispatch = useDispatch()
   const todo = useSelector(selectTodoById(id))
+
   const {text, completed, color} = todo
-  const colorName = color.name
+
+  let colorName = ''
+  let colorNameLowerCase = ''
+  if (color !== null) {
+    colorName = color.name
+    colorNameLowerCase = lowerCase(colorName)
+  }
 
   const colorOptions = availableColors.map(color => (
     <option key={color} value={lowerCase(color)}>
@@ -26,7 +33,7 @@ const TodoListItem = ({ id }) => {
   }
 
   const onDelete = () => {
-
+    dispatch(deleteTodo(id))
   }
 
   return (
@@ -45,8 +52,8 @@ const TodoListItem = ({ id }) => {
         <div className="segment buttons">
           <select
             className="colorPicker"
-            value={lowerCase(colorName)}
-            style={{ color: lowerCase(colorName) }}
+            value={colorNameLowerCase}
+            style={{color: colorNameLowerCase}}
             onChange={handleColorChanged}
           >
             <option value=""></option>

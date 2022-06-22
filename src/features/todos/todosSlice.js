@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect'
-import { StatusFilters } from '../filters/filtersSlice'
+import { statusFilterChanged, colorFilterChanged } from '../filters/filtersSlice'
 
 const initialState = {
     status: 'idle',
@@ -17,8 +17,11 @@ export default function todosReducer(state = initialState, action) {
             return {
                 ...state,
                 entities: {
-                ...state.entities,
-                [todo.id]: todo
+                    ...state.entities,
+                    data: [
+                        ...state.entities.data,
+                        todo
+                    ]
                 }
             }
         }
@@ -61,11 +64,13 @@ export default function todosReducer(state = initialState, action) {
             }
         }
         case 'todos/todoDeleted': {
-            const newEntities = { ...state.entities }
-            delete newEntities[action.payload]
+            const todoId = action.payload
             return {
                 ...state,
-                entities: newEntities
+                entities: {
+                    ...state.entities,
+                    data: state.entities.data.filter(todo => todo.id !== todoId)
+                }
             }
         }
         case 'todos/allCompleted': {
@@ -151,13 +156,24 @@ export const todosLoaded = (todos) => ({
 // Thunk function
 
 // get all
-export const fetchTodos = () => async (dispatch) => {
+export const fetchTodos = ({status, colors}) => async (dispatch) => {
     dispatch(todosLoading())
-    await fetch('http://localhost:8000/api/todos')
+    let url
+    if (status === undefined && colors === undefined) {
+        url = `http://localhost:8000/api/todos` 
+    } else {
+        url = `http://localhost:8000/api/todos?status=${status}&colors=${colors}` 
+    }
+    await fetch(url)
         .then(response => response.json())
         .then(result => {
             console.log('result: ', result)
-            dispatch(todosLoaded(result))
+            if (result.message) {
+                console.log('NOT FOUND!')
+                dispatch(todosLoaded({data: []}))
+            } else {
+                dispatch(todosLoaded(result))
+            }
         })
 }
 
@@ -175,15 +191,32 @@ export const updateTodo = ({id, completed, color}) => async dispatch => {
 
     const response = await fetch(url, {method: 'PUT'})
     if (!response.ok) {
-        throw new Error('toggle faild!')
+        throw new Error('Update todo faild!')
     }
-    console.log('success');
+    console.log('Update todo succeed!');
     dispatch(action)
+}
+
+//add todo
+export const addTodo = text => async dispatch => {
+    await fetch(`http://localhost:8000/api/todos?text=${text}`, {method: 'POST'})
+        .then(response => response.json())
+        .then(todo => dispatch(todoAdded(todo.data)))
+}
+
+//delete todo
+export const deleteTodo = todoId => async dispatch => {
+    const response = await fetch(`http://localhost:8000/api/todos/${todoId}`, {method: 'DELETE'})
+    if (!response.ok) {
+        throw new Error('Delete todo failed!')
+    }
+    console.log('Delete todo succeed!');
+    dispatch(todoDeleted(todoId))
 }
 
 
 //selectors
-const selectEntities = state => state.entities
+const selectEntities = state => state.todos.entities
 
 export const selectTodos = createSelector(
     selectEntities,
