@@ -154,13 +154,14 @@ export const todosLoaded = (todos) => ({
 // Thunk function
 
 // get all
-export const fetchTodos = ({status, colors, URL}) => async (dispatch) => {
+export const fetchTodos = ({status, colors}) => async (dispatch) => {
     dispatch(todosLoading())
+    const tempUrl = `http://localhost:8000/api/todos?pageSize=3`
     let url
     if (status === undefined && colors === undefined) {
-        url = `http://localhost:8000/api/todos?pageSize=3`
+        url = tempUrl
     } else {
-        url = `http://localhost:8000/api/todos?pageSize=3&status=${status}&colors=${colors}` 
+        url = tempUrl + `&status=${status}&color=${colors}`
     }
     await fetch(url)
         .then(response => response.json())
@@ -168,7 +169,7 @@ export const fetchTodos = ({status, colors, URL}) => async (dispatch) => {
             console.log('result: ', result)
             if (result.message) {
                 console.log('NOT FOUND!')
-                dispatch(todosLoaded({data: []}))
+                dispatch(todosLoaded({data: [], links: {}}))
             } else {
                 dispatch(todosLoaded(result))
             }

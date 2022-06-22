@@ -10,8 +10,7 @@ import reportWebVitals from './reportWebVitals';
 import store from './store'
 import {fetchTodos} from './features/todos/todosSlice'
 
-const URL = `http://localhost:8000/api/todos?pageSize=3`
-store.dispatch(fetchTodos({URL}))
+store.dispatch(fetchTodos({}))
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
