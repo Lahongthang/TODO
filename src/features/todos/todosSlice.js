@@ -249,8 +249,8 @@ export const markOrClear = (todoIds, action) => async dispatch => {
 }
 
 //pagination
-export const pagination = link => async dispatch => {
-    const url = link + `&pageSize=3`
+export const pagination = ({link, status, colors}) => async dispatch => {
+    const url = link + `&pageSize=3&status=${status}&colors=${colors}`
     await fetch(url)
         .then(response => response.json())
         .then(result => {
@@ -296,12 +296,7 @@ export const selectLinks = createSelector(
     entities => entities.links
 )
 
-export const selectMeta = createSelector(
-    selectEntities,
-    entities => entities.meta
-)
-
 export const selectMetaLinks = createSelector(
-    selectMeta,
-    meta => meta.links
+    selectEntities,
+    entities => entities.meta.links
 )

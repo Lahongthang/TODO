@@ -2,11 +2,6 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { addTodo } from '../todos/todosSlice'
 
-const nextTodoId = todos => {
-  const maxId = todos.reduce((maxId, todo) => Math.max(maxId, todo.id), -1)
-  return maxId + 1
-}
-
 const Header = () => {
   const dispatch = useDispatch()
   const [text, setText] = useState('')

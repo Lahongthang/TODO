@@ -5,6 +5,9 @@ import { capitalize } from "../filters/colors"
 const Pagination = () => {
     const dispatch = useDispatch()
 
+    const {status, colors} = useSelector(state => state.filters)
+    console.log('s&c: ', status, colors)
+
     const metaLinks = useSelector(selectMetaLinks)
     console.log('meta: ', metaLinks);
     const links = metaLinks.filter(link => link.url !== null)
@@ -23,7 +26,7 @@ const Pagination = () => {
             <button
                 key={index}
                 className={className}
-                onClick={() => dispatch(pagination(link.url))}
+                onClick={() => dispatch(pagination({link: link.url, status, colors}))}
             >
                 {label}
             </button>
