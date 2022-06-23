@@ -248,7 +248,7 @@ export const markOrClear = (todoIds, action) => async dispatch => {
     dispatch(action)
 }
 
-//pagination
+//pagination 
 export const pagination = ({link, status, colors}) => async dispatch => {
     const url = link + `&pageSize=3&status=${status}&colors=${colors}`
     await fetch(url)
