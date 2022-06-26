@@ -1,5 +1,4 @@
 import { createSelector } from 'reselect'
-import { statusFilterChanged, colorFilterChanged } from '../filters/filtersSlice'
 
 const initialState = {
     status: 'idle',
@@ -21,8 +20,8 @@ export default function todosReducer(state = initialState, action) {
                 entities: {
                     ...state.entities,
                     data: [
+                        todo,
                         ...state.entities.data,
-                        todo
                     ]
                 }
             }
@@ -104,12 +103,6 @@ export default function todosReducer(state = initialState, action) {
                 status: 'loading'
             }
         }
-        case 'todos/endLoading': {
-            return {
-                ...state,
-                status: 'idle'
-            }
-        }
         case 'todos/todosLoaded': {
             return {
                 ...state,
@@ -170,7 +163,7 @@ export const todosNotFound = () => ({type: 'todos/todosNotFound'})
 
 // Thunk function
 
-// filters
+// fetch todos with filters
 export const fetchTodos = ({status, colors}) => async (dispatch) => {
     dispatch(todosLoading())
     const tempUrl = `http://localhost:8000/api/todos?pageSize=3`
@@ -250,6 +243,7 @@ export const markOrClear = (todoIds, action) => async dispatch => {
 
 //pagination 
 export const pagination = ({link, status, colors}) => async dispatch => {
+    dispatch(todosLoading())
     const url = link + `&pageSize=3&status=${status}&colors=${colors}`
     await fetch(url)
         .then(response => response.json())
@@ -268,7 +262,13 @@ const selectEntities = state => state.todos.entities
 
 export const selectTodos = createSelector(
     selectEntities,
-    entities => entities.data
+    entities => entities.data.sort((first, second) => {
+        if (first.created_at > second.created_at) {
+            return -1
+        } else {
+            return 0
+        }
+    })
 )
 
 export const selectTodoIds = createSelector(

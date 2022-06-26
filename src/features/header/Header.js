@@ -1,22 +1,28 @@
 import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { addTodo } from '../todos/todosSlice'
 
 const Header = () => {
   const dispatch = useDispatch()
   const [text, setText] = useState('')
+  const [status, setStatus] = useState('idle')
 
   const handleChanged = (e) => {
     setText(e.target.value)
   }
 
-  const handleKeyDown = e => {
+  const handleKeyDown = async e => {
     if (e.which === 13 && text) {
+      setStatus('loading')
       const trimedText = text.trim()
       setText('')
-      dispatch(addTodo(trimedText))
+      await dispatch(addTodo(trimedText))
+      setStatus('idle')
     }
   }
+
+  let isLoading = status === 'loading'
+  let loader = isLoading ? <div className='loader'></div> : null
 
   return (
     <header className="header">
@@ -28,6 +34,7 @@ const Header = () => {
         onChange={handleChanged}
         onKeyDown={handleKeyDown}
       />
+      {loader}
     </header>
   )
 }

@@ -1,7 +1,13 @@
 import React from 'react'
 import { useEffect } from 'react'
 import { useSelector, useDispatch, shallowEqual } from 'react-redux'
-import { selectTodos, fetchTodos, selectTodoIds, updateTodo, markOrClear, selectTodoCompletedIds, selectTodosCompleted } from '../todos/todosSlice'
+import {
+  selectTodos,
+  fetchTodos,
+  selectTodoIds,
+  markOrClear,
+  selectTodoCompletedIds,
+} from '../todos/todosSlice'
 import { availableColors, lowerCase } from '../filters/colors'
 import { StatusFilters, colorFilterChanged, statusFilterChanged } from '../filters/filtersSlice'
 
@@ -82,10 +88,6 @@ const Footer = () => {
 
   const todosRemaining = todos.filter(todo => !todo.completed).length
   const {status, colors} = useSelector(state => state.filters, shallowEqual)
-
-  // const onStatusChange = (status) => {
-  //   dispatch(fetchTodos({status}))
-  // }
 
   const onStatusChange = (status) => {
     dispatch(statusFilterChanged(status))
