@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { selectTodoById, updateTodo, deleteTodo } from './todosSlice'
+import { selectTodoById, updateTodo, deleteTodo, fetchTodos } from './todosSlice'
 import { ReactComponent as TimesSolid } from './times-solid.svg'
 import { availableColors, lowerCase } from '../filters/colors'
 
@@ -32,8 +32,9 @@ const TodoListItem = ({ id }) => {
     dispatch(updateTodo({id, color}))
   }
 
-  const onDelete = () => {
-    dispatch(deleteTodo(id))
+  const onDelete = async () => {
+    await dispatch(deleteTodo(id))
+    await dispatch(fetchTodos({}))
   }
 
   return (

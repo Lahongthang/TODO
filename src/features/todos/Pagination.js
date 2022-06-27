@@ -11,6 +11,10 @@ const Pagination = () => {
     const links = metaLinks.filter(link => link.url !== null)
     console.log(links)
 
+    if (links.length < 2) {
+        return
+    } 
+
     const renderedPag = links.map((link, index) => {
         const className = link.active ? 'selected pag-button' : 'pag-button'
         let label = link.label

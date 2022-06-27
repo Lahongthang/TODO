@@ -313,6 +313,10 @@ main h2 {
   overflow-y: auto;
 }
 
+.message {
+  font-size: 30px;
+}
+
 ul.todo-list {
   list-style: none;
 }

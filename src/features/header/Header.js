@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { addTodo } from '../todos/todosSlice'
+import { addTodo, fetchTodos } from '../todos/todosSlice'
 
 const Header = () => {
   const dispatch = useDispatch()
@@ -17,6 +17,7 @@ const Header = () => {
       const trimedText = text.trim()
       setText('')
       await dispatch(addTodo(trimedText))
+      await dispatch(fetchTodos({}))
       setStatus('idle')
     }
   }

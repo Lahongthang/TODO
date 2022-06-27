@@ -103,6 +103,7 @@ const Footer = () => {
 
   const handleClearComplete = () => {
     dispatch(markOrClear(todoCompletedIds))
+    dispatch(fetchTodos({}))
   }
 
   useEffect(() => {

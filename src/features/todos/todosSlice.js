@@ -2,6 +2,7 @@ import { createSelector } from 'reselect'
 
 const initialState = {
     status: 'idle',
+    message: 'succeed',
     entities: {
         data: [],
         links: {},
@@ -107,12 +108,14 @@ export default function todosReducer(state = initialState, action) {
             return {
                 ...state,
                 status: 'idle',
-                entities: action.payload
+                entities: action.payload,
+                message: 'succeed'
             }
         }
         case 'todos/todosNotFound': {
             return {
                 ...state,
+                status: 'idle',
                 entities: {
                     data: [],
                     links: {},
@@ -120,7 +123,8 @@ export default function todosReducer(state = initialState, action) {
                         ...state.entities.meta,
                         links: []
                     }
-                }
+                },
+                message: action.payload
             }
         }
         default:
@@ -159,14 +163,14 @@ export const todosLoaded = (todos) => ({
     payload: todos
 })
 
-export const todosNotFound = () => ({type: 'todos/todosNotFound'})
+export const todosNotFound = (message) => ({type: 'todos/todosNotFound', payload: message})
 
 // Thunk function
 
 // fetch todos with filters
 export const fetchTodos = ({status, colors}) => async (dispatch) => {
     dispatch(todosLoading())
-    const tempUrl = `http://localhost:8000/api/todos?pageSize=3`
+    const tempUrl = `http://localhost:8000/api/todos?pageSize=3&sortBy=dateDesc`
     let url
     if (status === undefined && colors === undefined) {
         url = tempUrl
@@ -179,7 +183,7 @@ export const fetchTodos = ({status, colors}) => async (dispatch) => {
             console.log('result: ', result)
             if (result.message) {
                 console.log('NOT FOUND!')
-                dispatch(todosNotFound())
+                dispatch(todosNotFound(result.message))
             } else {
                 dispatch(todosLoaded(result))
             }
@@ -225,7 +229,6 @@ export const deleteTodo = todoId => async dispatch => {
 
 // mark all complete or clear all complete
 export const markOrClear = (todoIds, action) => async dispatch => {
-    console.log('aaaaaaaa: ', todoIds);
     let url
     if (action === 'mark') {
         url = `http://localhost:8000/api/todos/mark-completed?ids=${todoIds}`
@@ -244,12 +247,12 @@ export const markOrClear = (todoIds, action) => async dispatch => {
 //pagination 
 export const pagination = ({link, status, colors}) => async dispatch => {
     dispatch(todosLoading())
-    const url = link + `&pageSize=3&status=${status}&colors=${colors}`
+    const url = link + `&pageSize=3&sortBy=dateDesc&status=${status}&colors=${colors}`
     await fetch(url)
         .then(response => response.json())
         .then(result => {
             if (result.message) {
-                dispatch(todosNotFound())
+                dispatch(todosNotFound(result.message))
             } else {
                 dispatch(todosLoaded(result))
             }
