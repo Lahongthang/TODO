@@ -105,7 +105,7 @@ const Footer = () => {
 
   const handleClearComplete = async () => {
     await dispatch(markOrClear({todoIds: completesTodoIds, action: 'clear-completed'}))
-    // dispatch(clearAllCompleted())
+    await dispatch(fetchTodos({}))
   }
 
   return (

@@ -74,7 +74,7 @@ export const markOrClear = createAsyncThunk(
         if (!response.ok) {
             throw new Error('Mark or Clear todo failed!')
         }
-        return todoIds
+        return response.json()
     }
 )
 
@@ -88,17 +88,6 @@ const todosSlice = createSlice({
                 newEntities[entity.id] = {
                     ...entity,
                     completed: true
-                }
-            })
-            state.entities = newEntities
-        },
-        clearAllCompleted(state) {
-            const newEntities = {}
-            Object.values(state.entities).map(entity => {
-                if (entity.completed) {
-                    // newEntities[entity.id] = entity
-                } else {
-                    newEntities[entity.id] = entity
                 }
             })
             state.entities = newEntities
@@ -130,10 +119,6 @@ const todosSlice = createSlice({
             })
             .addCase(deleteTodo.fulfilled, (state, action) => {
                 todosAdapter.removeOne(state, action.payload.data.id)
-            })
-            .addCase(markOrClear.fulfilled, (state, action) => {
-                console.log('kkkkkkk: ', action.payload)
-                
             })
     }
 })
