@@ -7,7 +7,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import store from './store'
+import store from './store';
 import {fetchTodos} from './features/todos/todosSlice'
 
 store.dispatch(fetchTodos({}))

@@ -1,11 +1,14 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { addTodo, fetchTodos } from '../todos/todosSlice'
+import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { addTodo, fetchTodos, selectTodos } from '../todos/todosSlice'
 
 const Header = () => {
   const dispatch = useDispatch()
   const [text, setText] = useState('')
   const [status, setStatus] = useState('idle')
+
+  const todos = useSelector(selectTodos)
+  console.log('todos: ', todos)
 
   const handleChanged = (e) => {
     setText(e.target.value)

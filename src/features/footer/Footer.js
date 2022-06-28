@@ -1,12 +1,12 @@
-import React from 'react'
-import { useEffect } from 'react'
-import { useSelector, useDispatch, shallowEqual } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import {
   selectTodos,
   fetchTodos,
   selectTodoIds,
   markOrClear,
-  selectTodoCompletedIds,
+  markAllCompleted,
+  selectCompletedTodoIds,
+  clearAllCompleted
 } from '../todos/todosSlice'
 import { availableColors, lowerCase } from '../filters/colors'
 import { StatusFilters, colorFilterChanged, statusFilterChanged } from '../filters/filtersSlice'
@@ -79,36 +79,34 @@ const ColorFilters = ({value: colors, onChange}) => {
 
 const Footer = () => {
   const dispatch = useDispatch()
-
-  const todos = useSelector(selectTodos, shallowEqual)
-
+  const todos = useSelector(selectTodos)
   const todoIds = useSelector(selectTodoIds)
 
-  const todoCompletedIds = useSelector(selectTodoCompletedIds)
+  const state = useSelector(state => state)
+  console.log('STATE: ', state.todos)
+
+  const completesTodoIds = useSelector(selectCompletedTodoIds)
 
   const todosRemaining = todos.filter(todo => !todo.completed).length
-  const {status, colors} = useSelector(state => state.filters, shallowEqual)
+  const {status, colors} = useSelector(state => state.filters)
 
   const onStatusChange = (status) => {
-    dispatch(statusFilterChanged(status))
+    
   }
 
   const onColorChange = (color, changeType) => {
-    dispatch(colorFilterChanged(color, changeType))
+    
   }
 
-  const handleMarkAllComplete = () => {
-    dispatch(markOrClear(todoIds, 'mark'))
+  const handleMarkAllComplete = async () => {
+    await dispatch(markOrClear({todoIds, action: 'mark-completed'}))
+    dispatch(markAllCompleted())
   }
 
-  const handleClearComplete = () => {
-    dispatch(markOrClear(todoCompletedIds))
-    dispatch(fetchTodos({}))
+  const handleClearComplete = async () => {
+    await dispatch(markOrClear({todoIds: completesTodoIds, action: 'clear-completed'}))
+    // dispatch(clearAllCompleted())
   }
-
-  useEffect(() => {
-    dispatch(fetchTodos({status, colors}))
-  }, [status, colors])
 
   return (
     <footer className="footer">

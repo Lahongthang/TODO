@@ -1,21 +1,23 @@
-import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { selectTodoById, updateTodo, deleteTodo, fetchTodos } from './todosSlice'
+import { selectTodoById, fetchTodos, updateTodo, deleteTodo } from './todosSlice'
 import { ReactComponent as TimesSolid } from './times-solid.svg'
 import { availableColors, lowerCase } from '../filters/colors'
 
 const TodoListItem = ({ id }) => {
   const dispatch = useDispatch()
-  const todo = useSelector(selectTodoById(id))
+  const todo = useSelector(state => selectTodoById(state, id))
 
   const {text, completed, color} = todo
 
-  let colorName = ''
-  let colorNameLowerCase = ''
-  if (color !== null) {
-    colorName = color.name
-    colorNameLowerCase = lowerCase(colorName)
-  }
+  // let colorName = ''
+  // let colorNameLowerCase = ''
+  // if (color !== null) {
+  //   colorName = color.name
+  //   colorNameLowerCase = lowerCase(colorName)
+  // }
+
+  let colorName = color ? color.name : ''
+  let colorNameLowerCase = colorName ? lowerCase(colorName) : ''
 
   const colorOptions = availableColors.map(color => (
     <option key={color} value={lowerCase(color)}>

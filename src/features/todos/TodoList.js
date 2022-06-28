@@ -1,13 +1,10 @@
-import React from 'react'
-import { useSelector, shallowEqual } from 'react-redux'
+import { useSelector } from 'react-redux'
 import TodoListItem from './TodoListItem'
 import { selectTodoIds } from './todosSlice'
 
 const TodoList = () => {
-    const todoIds = useSelector(selectTodoIds, shallowEqual)
+    const todoIds = useSelector(selectTodoIds)
     const status = useSelector(state => state.todos.status)
-
-    const message = useSelector(state => state.todos.message)
 
     const renderedListItem = todoIds.map(todoId => {
         return <TodoListItem key={todoId} id={todoId}/>
@@ -19,10 +16,12 @@ const TodoList = () => {
                 <div className='todo-list'>
                     <div className='loader'></div>
                 </div>
-            ) : message === 'succeed' ? (
-                <ul className='todo-list'>{renderedListItem}</ul>
+            ) : status === 'failed' ? (
+                <div className='todo-list'>
+                    <h2>Todos Not Found!</h2>
+                </div>
             ) : (
-                <center className='todo-list message'>{message}</center>
+                <ul className='todo-list'>{renderedListItem}</ul>
             )}
         </div>
     )

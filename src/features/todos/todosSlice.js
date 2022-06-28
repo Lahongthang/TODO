@@ -1,303 +1,159 @@
-import { createSelector } from 'reselect'
+import {createEntityAdapter, createSlice, createAsyncThunk, createSelector} from '@reduxjs/toolkit'
 
-const initialState = {
+const todosAdapter = createEntityAdapter()
+
+const initialState = todosAdapter.getInitialState({
     status: 'idle',
-    message: 'succeed',
-    entities: {
-        data: [],
-        links: {},
-        meta: {
-            links: []
-        }
-    }
-}
-
-export default function todosReducer(state = initialState, action) {
-    switch (action.type) {
-        case 'todos/todoAdded': {
-            const todo = action.payload
-            return {
-                ...state,
-                entities: {
-                    ...state.entities,
-                    data: [
-                        todo,
-                        ...state.entities.data,
-                    ]
-                }
-            }
-        }
-        case 'todos/todoToggled': {
-            const todoId = action.payload
-            return {
-                ...state,
-                entities: {
-                    ...state.entities,
-                    data: state.entities.data.map(todo => {
-                        if (todo.id !== todoId) {
-                            return todo
-                        }
-                        return {
-                            ...todo,
-                            completed: !todo.completed
-                        }
-                    })
-                }
-            }
-        }
-        case 'todos/colorSelected': {
-            const { color, todoId } = action.payload
-            return {
-                ...state,
-                entities: {
-                    ...state.entities,
-                    data: state.entities.data.map(todo => {
-                        if (todo.id !== todoId) {
-                            return todo
-                        }
-                        return {
-                            ...todo,
-                            color: {
-                                name: color
-                            }
-                        }
-                    })
-                }
-            }
-        }
-        case 'todos/todoDeleted': {
-            const todoId = action.payload
-            return {
-                ...state,
-                entities: {
-                    ...state.entities,
-                    data: state.entities.data.filter(todo => todo.id !== todoId)
-                }
-            }
-        }
-        case 'todos/allCompleted': {
-            return {
-                ...state,
-                entities: {
-                    ...state.entities,
-                    data: state.entities.data.map(todo => {
-                        return {
-                            ...todo,
-                            completed: true
-                        }
-                    })
-                }
-            }
-        }
-        case 'todos/completedCleared': {
-            return {
-                ...state,
-                entities: {
-                    ...state.entities,
-                    data: state.entities.data.filter(todo => !todo.completed)
-                }
-            }
-        }
-        case 'todos/todosLoading': {
-            return {
-                ...state,
-                status: 'loading'
-            }
-        }
-        case 'todos/todosLoaded': {
-            return {
-                ...state,
-                status: 'idle',
-                entities: action.payload,
-                message: 'succeed'
-            }
-        }
-        case 'todos/todosNotFound': {
-            return {
-                ...state,
-                status: 'idle',
-                entities: {
-                    data: [],
-                    links: {},
-                    meta: {
-                        ...state.entities.meta,
-                        links: []
-                    }
-                },
-                message: action.payload
-            }
-        }
-        default:
-        return state
-    }
-}
-
-//action creators
-export const todoAdded = (todo) => ({ type: 'todos/todoAdded', payload: todo })
-
-export const todoToggled = (todoId) => ({
-    type: 'todos/todoToggled',
-    payload: todoId
+    links: {},
+    meta: {}
 })
-
-export const todoColorSelected = (todoId, color) => ({
-    type: 'todos/colorSelected',
-    payload: { todoId, color }
-})
-
-export const todoDeleted = (todoId) => ({
-    type: 'todos/todoDeleted',
-    payload: todoId
-})
-
-export const allTodosCompleted = () => ({ type: 'todos/allCompleted' })
-
-export const completedTodosCleared = () => ({ type: 'todos/completedCleared' })
-
-export const todosLoading = () => ({ type: 'todos/todosLoading' })
-
-export const endLoading = () => ({type: 'todos/endLoading'})
-
-export const todosLoaded = (todos) => ({
-    type: 'todos/todosLoaded',
-    payload: todos
-})
-
-export const todosNotFound = (message) => ({type: 'todos/todosNotFound', payload: message})
-
-// Thunk function
 
 // fetch todos with filters
-export const fetchTodos = ({status, colors}) => async (dispatch) => {
-    dispatch(todosLoading())
-    const tempUrl = `http://localhost:8000/api/todos?pageSize=3&sortBy=dateDesc`
-    const statusParam = status ? `&status=${status}` : ''
-    const colorsParam = colors ? `&colors=${colors}` : ''
-    let url = tempUrl + statusParam + colorsParam
-    await fetch(url)
-        .then(response => response.json())
-        .then(result => {
-            console.log('result: ', result)
-            if (result.message) {
-                console.log('NOT FOUND!')
-                dispatch(todosNotFound(result.message))
-            } else {
-                dispatch(todosLoaded(result))
-            }
-        })
-}
-
-// update todo
-export const updateTodo = ({id, completed, color}) => async dispatch => {
-    let url
-    let action
-
-    if (completed !== undefined) {
-        url = `http://localhost:8000/api/todos/${id}?completed=${!completed}`
-        action = todoToggled(id)
-    } else if (color !== undefined) {
-        url = `http://localhost:8000/api/todos/${id}?color=${color}`
-        action = todoColorSelected(id, color)
-    }
-
-    const response = await fetch(url, {method: 'PUT'})
-    if (!response.ok) {
-        throw new Error('Update todo faild!')
-    }
-    console.log('Update todo succeed!');
-    dispatch(action)
-}
-
-//add todo
-export const addTodo = text => async dispatch => {
-    await fetch(`http://localhost:8000/api/todos?text=${text}`, {method: 'POST'})
-        .then(response => response.json())
-        .then(todo => dispatch(todoAdded(todo.data)))
-}
-
-//delete todo
-export const deleteTodo = todoId => async dispatch => {
-    const response = await fetch(`http://localhost:8000/api/todos/${todoId}`, {method: 'DELETE'})
-    if (!response.ok) {
-        throw new Error('Delete todo failed!')
-    }
-    console.log('Delete todo succeed!');
-    dispatch(todoDeleted(todoId))
-}
-
-// mark all complete or clear all complete
-export const markOrClear = (todoIds, action) => async dispatch => {
-    let url
-    if (action === 'mark') {
-        url = `http://localhost:8000/api/todos/mark-completed?ids=${todoIds}`
-        action = allTodosCompleted()
-    } else {
-        url = `http://localhost:8000/api/todos/clear-completed?ids=${todoIds}`
-        action = completedTodosCleared()
-    }
-    const response = await fetch(url)
-    if (!response.ok) {
-        throw new Error('failed!')
-    }
-    dispatch(action)
-}
-
-//pagination 
-export const pagination = ({link, status, colors}) => async dispatch => {
-    dispatch(todosLoading())
-    const url = link + `&pageSize=3&sortBy=dateDesc&status=${status}&colors=${colors}`
-    await fetch(url)
-        .then(response => response.json())
-        .then(result => {
-            if (result.message) {
-                dispatch(todosNotFound(result.message))
-            } else {
-                dispatch(todosLoaded(result))
-            }
-        })
-}
-
-
-//selectors
-const selectEntities = state => state.todos.entities
-
-export const selectTodos = createSelector(
-    selectEntities,
-    entities => entities.data.sort((first, second) => {
-        if (first.created_at > second.created_at) {
-            return -1
-        } else {
-            return 0
+export const fetchTodos = createAsyncThunk(
+    'todos/fetchTodos',
+    async ({link, status, colors}) => {
+        let tempUrl = link ? link : `http://localhost:8000/api/todos?page=1`
+        const statusParam = status ? `&status=${status}` : ''
+        const colorsParam = colors ? `&colors=${colors}` : ''
+        const url = tempUrl + '&pageSize=3&sortBy=dateDesc' + statusParam + colorsParam
+        console.log('url: ', url)
+        const response = await fetch(url)
+        if (!response.ok) {
+            throw new Error('fetch todos failed!')
         }
-    })
+        return response.json()
+    }
 )
 
-export const selectTodoIds = createSelector(
-    selectTodos,
-    todos => todos.map(todo => todo.id)
+export const addTodo = createAsyncThunk(
+    'todos/addTodo',
+    async text => {
+        const response = await fetch(`http://localhost:8000/api/todos?text=${text}`, {method: 'POST'})
+        if (!response.ok) {
+            throw new Error('Add todo failed!')
+        }
+        return response.json()
+    }
 )
 
-export const selectTodoById = todoId => createSelector(
-    selectTodos,
-    todos => todos.find(todo => todo.id === todoId)
+export const updateTodo = createAsyncThunk(
+    'todos/updateTodo',
+    async ({id, completed, color}) => {
+        const completedParam = completed !== undefined ? `completed=${!completed}` : ''
+        const colorParam = color ? `color=${color}` : ''
+        let tempUrl = `http://localhost:8000/api/todos/${id}?`
+        const url = tempUrl + completedParam + colorParam
+        console.log('url: ', url)
+        const response = await fetch(url, {method: 'PUT'})
+        if (!response.ok) {
+            throw new Error('Update todo failed!')
+        }
+        return response.json()
+    }
 )
 
-export const selectTodosCompleted = createSelector(
+export const deleteTodo = createAsyncThunk(
+    'todos/deleteTodo',
+    async todoId => {
+        const url = `http://localhost:8000/api/todos/${todoId}`
+        const response = await fetch(url, {method: 'DELETE'})
+        if (!response.ok) {
+            throw new Error('Delete todo failed!')
+        }
+        return response.json()
+    }
+)
+
+export const markOrClear = createAsyncThunk(
+    'todos/markOrClear',
+    async ({todoIds, action}) => {
+        const tempUrl = 'http://localhost:8000/api/todos/'
+        const idParam = `?ids=${todoIds}`
+        const url = tempUrl + action + idParam
+        const response = await fetch(url)
+        if (!response.ok) {
+            throw new Error('Mark or Clear todo failed!')
+        }
+        return todoIds
+    }
+)
+
+const todosSlice = createSlice({
+    name: 'todos',
+    initialState,
+    reducers: {
+        markAllCompleted(state) {
+            const newEntities = {}
+            Object.values(state.entities).map(entity => {
+                newEntities[entity.id] = {
+                    ...entity,
+                    completed: true
+                }
+            })
+            state.entities = newEntities
+        },
+        clearAllCompleted(state) {
+            const newEntities = {}
+            Object.values(state.entities).map(entity => {
+                if (entity.completed) {
+                    // newEntities[entity.id] = entity
+                } else {
+                    newEntities[entity.id] = entity
+                }
+            })
+            state.entities = newEntities
+        }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchTodos.pending, (state) => {
+                state.status = 'loading'
+            })
+            .addCase(fetchTodos.fulfilled, (state, action) => {
+                console.log('payload: ', action.payload)
+                state.status = 'idle'
+                state.links = action.payload.links
+                state.meta = action.payload.meta
+                todosAdapter.removeAll(state)
+                todosAdapter.setAll(state, action.payload.data)
+            })
+            .addCase(fetchTodos.rejected, (state, action) => {
+                state.status = 'failed'
+                todosAdapter.removeAll(state)
+            })
+            .addCase(addTodo.fulfilled, (state, action) => {
+                todosAdapter.addOne(state, action.payload.data)
+            })
+            .addCase(updateTodo.fulfilled, (state, action) => {
+                console.log('jjjjjjjjj: ', action.payload.data)
+                todosAdapter.upsertOne(state, action.payload.data)
+            })
+            .addCase(deleteTodo.fulfilled, (state, action) => {
+                todosAdapter.removeOne(state, action.payload.data.id)
+            })
+            .addCase(markOrClear.fulfilled, (state, action) => {
+                console.log('kkkkkkk: ', action.payload)
+                
+            })
+    }
+})
+
+export const {markAllCompleted, clearAllCompleted} = todosSlice.actions
+
+export const {
+    selectAll: selectTodos,
+    selectIds: selectTodoIds,
+    selectById: selectTodoById
+} = todosAdapter.getSelectors(state => state.todos)
+
+const selectCompletedTodos = createSelector(
     selectTodos,
     todos => todos.filter(todo => todo.completed)
 )
 
-export const selectTodoCompletedIds = createSelector(
-    selectTodosCompleted,
-    todoCompleted => todoCompleted.map(todo => todo.id)
+export const selectCompletedTodoIds = createSelector(
+    selectCompletedTodos,
+    completedTodos => completedTodos.map(todo => todo.id)
 )
 
-export const selectLinks = createSelector(
-    selectEntities,
-    entities => entities.links
-)
-
-export const selectMetaLinks = createSelector(
-    selectEntities,
-    entities => entities.meta.links
-)
+export default todosSlice.reducer
