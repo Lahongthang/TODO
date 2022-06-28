@@ -24,12 +24,13 @@ export const filtersSlice = createSlice({
             switch (changeType) {
                 case 'added': {
                     if (!colors.includes(color)) {
-                        state.colors.concat(color)
+                        state.colors.push(color)
                     }
                 }
                 break
                 case 'removed': {
-                    state.colors.filter(existingClolor => existingClolor !== color)
+                    console.log('remove')
+                    state.colors = state.colors.filter(existingClolor => existingClolor !== color)
                 }
                 break
                 default: 

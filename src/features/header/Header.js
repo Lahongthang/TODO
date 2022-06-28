@@ -8,7 +8,6 @@ const Header = () => {
   const [status, setStatus] = useState('idle')
 
   const todos = useSelector(selectTodos)
-  console.log('todos: ', todos)
 
   const handleChanged = (e) => {
     setText(e.target.value)

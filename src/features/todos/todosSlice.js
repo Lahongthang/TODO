@@ -91,6 +91,15 @@ const todosSlice = createSlice({
                 }
             })
             state.entities = newEntities
+        },
+        clearAllCompleted(state) {
+            const newEntities = {}
+            const newArr = Object.values(state.entities).filter(entity => !entity.completed)
+            newArr.map(todo => {
+                newEntities[todo.id] = todo
+            })
+            state.entities = newEntities
+            // have problem ...........
         }
     },
     extraReducers: (builder) => {
@@ -99,14 +108,13 @@ const todosSlice = createSlice({
                 state.status = 'loading'
             })
             .addCase(fetchTodos.fulfilled, (state, action) => {
-                console.log('payload: ', action.payload)
                 state.status = 'idle'
                 state.links = action.payload.links
                 state.meta = action.payload.meta
                 todosAdapter.removeAll(state)
                 todosAdapter.setAll(state, action.payload.data)
             })
-            .addCase(fetchTodos.rejected, (state, action) => {
+            .addCase(fetchTodos.rejected, (state) => {
                 state.status = 'failed'
                 todosAdapter.removeAll(state)
             })
@@ -114,7 +122,6 @@ const todosSlice = createSlice({
                 todosAdapter.addOne(state, action.payload.data)
             })
             .addCase(updateTodo.fulfilled, (state, action) => {
-                console.log('jjjjjjjjj: ', action.payload.data)
                 todosAdapter.upsertOne(state, action.payload.data)
             })
             .addCase(deleteTodo.fulfilled, (state, action) => {
@@ -128,7 +135,8 @@ export const {markAllCompleted, clearAllCompleted} = todosSlice.actions
 export const {
     selectAll: selectTodos,
     selectIds: selectTodoIds,
-    selectById: selectTodoById
+    selectById: selectTodoById,
+    selectEntities
 } = todosAdapter.getSelectors(state => state.todos)
 
 const selectCompletedTodos = createSelector(

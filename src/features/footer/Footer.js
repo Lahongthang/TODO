@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   selectTodos,
@@ -82,40 +83,42 @@ const Footer = () => {
   const todos = useSelector(selectTodos)
   const todoIds = useSelector(selectTodoIds)
 
-  const state = useSelector(state => state)
-  console.log('STATE: ', state.todos)
-
   const completesTodoIds = useSelector(selectCompletedTodoIds)
 
   const todosRemaining = todos.filter(todo => !todo.completed).length
   const {status, colors} = useSelector(state => state.filters)
 
   const onStatusChange = (status) => {
-    
+    dispatch(statusFilterChanged(status))
   }
 
   const onColorChange = (color, changeType) => {
-    
+    dispatch(colorFilterChanged({color, changeType}))
   }
 
-  const handleMarkAllComplete = async () => {
+  const handleMarkAllCompleted = async () => {
     await dispatch(markOrClear({todoIds, action: 'mark-completed'}))
     dispatch(markAllCompleted())
   }
 
-  const handleClearComplete = async () => {
+  const handleClearCompleted = async () => {
     await dispatch(markOrClear({todoIds: completesTodoIds, action: 'clear-completed'}))
     await dispatch(fetchTodos({}))
+    // dispatch(clearAllCompleted())
   }
+
+  useEffect(() => {
+    dispatch(fetchTodos({status, colors}))
+  }, [status, colors])
 
   return (
     <footer className="footer">
       <div className="actions">
         <h5>Actions</h5>
-        <button className="button" onClick={handleMarkAllComplete}>
+        <button className="button" onClick={handleMarkAllCompleted}>
           Mark All Completed
         </button>
-        <button className="button" onClick={handleClearComplete}>
+        <button className="button" onClick={handleClearCompleted}>
           Clear Completed
         </button>
       </div>

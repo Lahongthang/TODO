@@ -7,9 +7,7 @@ const Pagination = () => {
     const {status, colors} = useSelector(state => state.filters)
 
     const metaLinks = useSelector(state => state.todos.meta.links)
-    console.log('metaLinks: ', metaLinks)
     const links = metaLinks?.filter(link => link.url !== null)
-    console.log('links: ', links)
 
     if (links?.length < 2) {
         return
