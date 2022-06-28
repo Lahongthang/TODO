@@ -171,12 +171,9 @@ export const todosNotFound = (message) => ({type: 'todos/todosNotFound', payload
 export const fetchTodos = ({status, colors}) => async (dispatch) => {
     dispatch(todosLoading())
     const tempUrl = `http://localhost:8000/api/todos?pageSize=3&sortBy=dateDesc`
-    let url
-    if (status === undefined && colors === undefined) {
-        url = tempUrl
-    } else {
-        url = tempUrl + `&status=${status}&colors=${colors}`
-    }
+    const statusParam = status ? `&status=${status}` : ''
+    const colorsParam = colors ? `&colors=${colors}` : ''
+    let url = tempUrl + statusParam + colorsParam
     await fetch(url)
         .then(response => response.json())
         .then(result => {
@@ -194,6 +191,7 @@ export const fetchTodos = ({status, colors}) => async (dispatch) => {
 export const updateTodo = ({id, completed, color}) => async dispatch => {
     let url
     let action
+
     if (completed !== undefined) {
         url = `http://localhost:8000/api/todos/${id}?completed=${!completed}`
         action = todoToggled(id)

@@ -18,7 +18,7 @@ const Pagination = () => {
     const renderedPag = links.map((link, index) => {
         const className = link.active ? 'selected pag-button' : 'pag-button'
         let label = link.label
-        if (link.label === 'Next &raquo;') {
+        if (label === 'Next &raquo;') {
             label = 'Next >>'
         } else if (link.label === '&laquo; Previous') {
             label = '<< Prev'
