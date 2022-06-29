@@ -13,7 +13,7 @@ const TodoListItem = ({ id }) => {
   let colorNameLowerCase = colorName ? lowerCase(colorName) : ''
 
   const colorOptions = availableColors.map(color => (
-    <option key={color} value={lowerCase(color)}>
+    <option key={color} value={lowerCase(color)} style={{color: lowerCase(color)}}>
       {color}
     </option>
   ))

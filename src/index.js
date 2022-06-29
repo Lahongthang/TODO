@@ -9,8 +9,10 @@ import reportWebVitals from './reportWebVitals';
 
 import store from './store';
 import {fetchTodos} from './features/todos/todosSlice'
+import {fetchColors} from './features/colors/colorsSlice'
 
 store.dispatch(fetchTodos({}))
+store.dispatch(fetchColors())
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

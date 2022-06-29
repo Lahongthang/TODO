@@ -9,8 +9,9 @@ import {
   selectCompletedTodoIds,
   clearAllCompleted
 } from '../todos/todosSlice'
-import { availableColors, lowerCase } from '../filters/colors'
+import { lowerCase } from '../filters/colors'
 import { StatusFilters, colorFilterChanged, statusFilterChanged } from '../filters/filtersSlice'
+import { selectAllColors } from '../colors/colorsSlice'
 
 const RemainingTodos = ({ count }) => {
   const suffix = count < 2 ? '' : 's'
@@ -46,7 +47,10 @@ const StatusFilter = ({value: status, onChange}) => {
 }
 
 const ColorFilters = ({value: colors, onChange}) => {
-  const renderedColors = availableColors.map(color => {
+  const colorsObj = useSelector(selectAllColors)
+  const apiColors = colorsObj.map(color => color.name)
+
+  const renderedColors = apiColors.map(color => {
     const checked = colors.includes(color)
     const handleChange = () => {
       const changeType = checked ? 'removed' : 'added'

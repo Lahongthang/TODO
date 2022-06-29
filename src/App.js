@@ -4,6 +4,7 @@ import TodoList from './features/todos/TodoList'
 import Pagination from './features/todos/Pagination'
 import Footer from './features/footer/Footer'
 import Notification from './features/notifications/Notification'
+import Test1 from './features/test/Test1'
 
 function App() {
 
@@ -18,7 +19,6 @@ function App() {
       <main>
         <section className="medium-container">
           <h2>Todos</h2>
-          
           <div className="todoapp">
             <Header />
             <TodoList />
