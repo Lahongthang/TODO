@@ -117,10 +117,18 @@ const Footer = () => {
     <footer className="footer">
       <div className="actions">
         <h5>Actions</h5>
-        <button className="button" onClick={handleMarkAllCompleted} disabled={disableMark}>
+        <button
+          className="button"
+          onClick={handleMarkAllCompleted}
+          disabled={disableMark}
+        >
           Mark All Completed
         </button>
-        <button className="button" onClick={handleClearCompleted} disabled={disableClear}>
+        <button
+          className="button"
+          onClick={handleClearCompleted}
+          disabled={disableClear}
+        >
           Clear Completed
         </button>
       </div>
