@@ -91,6 +91,7 @@ section h1 {
   border-radius: 4px;
   font-weight: 700;
   padding: 0.75rem 1.5rem;
+  cursor: pointer;
 }
 
 button:disabled,
@@ -220,6 +221,13 @@ main h2 {
   display: none;
 }
 
+.notification {
+  background-color: #e2f863;
+  text-align: center;
+  font-size: larger;
+  color: red;
+}
+
 .todoapp {
   background: #fff;
   min-width: 800px;
@@ -308,7 +316,7 @@ main h2 {
   display: flex;
   flex-direction: column;
   position: relative;
-  height: 300px;
+  height: 230px;
   max-height: 400px;
   overflow-y: auto;
 }
@@ -343,6 +351,10 @@ ul.todo-list {
 
 .todo-list li .segment.label {
   flex-grow: 2;
+}
+
+input[type='checkbox'] {
+  cursor: pointer;
 }
 
 .todo-list li .toggle {
@@ -401,6 +413,7 @@ ul.todo-list {
   height: 30px;
   line-height: 24px;
   font-weight: 700;
+  cursor: pointer;
 }
 
 .todo-list li select.colorPicker option {

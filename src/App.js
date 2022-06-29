@@ -3,6 +3,7 @@ import Header from './features/header/Header'
 import TodoList from './features/todos/TodoList'
 import Pagination from './features/todos/Pagination'
 import Footer from './features/footer/Footer'
+import Notification from './features/notifications/Notification'
 
 function App() {
 
@@ -13,9 +14,11 @@ function App() {
           <h1>Redux Fundamentals Example</h1>
         </section>
       </nav>
+      <Notification/>
       <main>
         <section className="medium-container">
           <h2>Todos</h2>
+          
           <div className="todoapp">
             <Header />
             <TodoList />

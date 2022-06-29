@@ -4,22 +4,24 @@ const todosAdapter = createEntityAdapter()
 
 const initialState = todosAdapter.getInitialState({
     status: 'idle',
-    links: {},
-    meta: {}
+    meta: {},
+    message: ''
 })
 
 // fetch todos with filters
 export const fetchTodos = createAsyncThunk(
     'todos/fetchTodos',
     async ({link, status, colors}) => {
-        let tempUrl = link ? link : `http://localhost:8000/api/todos?page=1`
+        const tempUrl = link ?
+            link + '&pageSize=3&sortBy=dateDesc' :
+            `http://localhost:8000/api/todos?page=1&pageSize=3&sortBy=dateDesc`
         const statusParam = status ? `&status=${status}` : ''
         const colorsParam = colors ? `&colors=${colors}` : ''
-        const url = tempUrl + '&pageSize=3&sortBy=dateDesc' + statusParam + colorsParam
-        console.log('url: ', url)
+        const url = tempUrl + statusParam + colorsParam
+        // console.log('url: ', url)
         const response = await fetch(url)
         if (!response.ok) {
-            throw new Error('fetch todos failed!')
+            throw new Error('Todos Not Found!')
         }
         return response.json()
     }
@@ -68,11 +70,15 @@ export const markOrClear = createAsyncThunk(
     'todos/markOrClear',
     async ({todoIds, action}) => {
         const tempUrl = 'http://localhost:8000/api/todos/'
-        const idParam = `?ids=${todoIds}`
+        const idParam = todoIds.length > 0 ? `?ids=${todoIds}` : '?ids=-1'
         const url = tempUrl + action + idParam
+        console.log('URL: ', url)
         const response = await fetch(url)
         if (!response.ok) {
-            throw new Error('Mark or Clear todo failed!')
+            if (action === 'mark-completed') {
+                throw new Error('Mark all todos failed!')
+            }
+            throw new Error('Clear todos failed!')
         }
         return response.json()
     }
@@ -83,23 +89,17 @@ const todosSlice = createSlice({
     initialState,
     reducers: {
         markAllCompleted(state) {
-            const newEntities = {}
-            Object.values(state.entities).map(entity => {
-                newEntities[entity.id] = {
-                    ...entity,
-                    completed: true
-                }
+            Object.values(state.entities).forEach(entity => {
+                entity.completed = true
             })
-            state.entities = newEntities
         },
         clearAllCompleted(state) {
-            const newEntities = {}
-            const newArr = Object.values(state.entities).filter(entity => !entity.completed)
-            newArr.map(todo => {
-                newEntities[todo.id] = todo
+            Object.values(state.entities).forEach(entity => {
+                if (entity.completed) {
+                    delete state.entities[entity.id]
+                    state.ids = state.ids.filter(id => id !== entity.id)
+                } 
             })
-            state.entities = newEntities
-            // have problem ...........
         }
     },
     extraReducers: (builder) => {
@@ -109,23 +109,47 @@ const todosSlice = createSlice({
             })
             .addCase(fetchTodos.fulfilled, (state, action) => {
                 state.status = 'idle'
-                state.links = action.payload.links
+                state.message = ''
                 state.meta = action.payload.meta
-                todosAdapter.removeAll(state)
                 todosAdapter.setAll(state, action.payload.data)
             })
-            .addCase(fetchTodos.rejected, (state) => {
+            .addCase(fetchTodos.rejected, (state, action) => {
                 state.status = 'failed'
+                state.message = action.error.message
+                state.meta = {}
                 todosAdapter.removeAll(state)
             })
+
             .addCase(addTodo.fulfilled, (state, action) => {
+                state.status = 'idle'
+                // state.message = '1 todo added!'
                 todosAdapter.addOne(state, action.payload.data)
             })
+            .addCase(addTodo.rejected, (state, action) => {
+                state.message = action.error.message
+            })
+
             .addCase(updateTodo.fulfilled, (state, action) => {
+                state.message = 'Update todo succeed!'
                 todosAdapter.upsertOne(state, action.payload.data)
             })
+            .addCase(updateTodo.rejected, (state, action) => {
+                state.message = action.error.message
+            })
+
             .addCase(deleteTodo.fulfilled, (state, action) => {
+                state.message = '1 todo deleted'
                 todosAdapter.removeOne(state, action.payload.data.id)
+            })
+            .addCase(deleteTodo.rejected, (state, action) => {
+                state.message = action.error.message
+            })
+
+            .addCase(markOrClear.fulfilled, (state, action) => {
+                state.message = action.payload.message
+            })
+            .addCase(markOrClear.rejected, (state, action) => {
+                state.message = action.error.message
             })
     }
 })

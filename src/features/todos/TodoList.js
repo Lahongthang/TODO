@@ -1,19 +1,23 @@
-import { useSelector } from 'react-redux'
+import { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import TodoListItem from './TodoListItem'
-import { selectTodoIds, selectTodos, selectEntities } from './todosSlice'
+import { selectTodoIds, selectEntities, fetchTodos } from './todosSlice'
 
 const TodoList = () => {
+    const dispatch = useDispatch()
     const todoIds = useSelector(selectTodoIds)
     const status = useSelector(state => state.todos.status)
-
-    const todos = useSelector(selectTodos)
-    console.log('todos: ', todos)
-    const entities = useSelector(selectEntities)
-    console.log('entities: ', entities)
+    const {status: stateStatus, colors} = useSelector(state => state.filters)
 
     const renderedListItem = todoIds.map(todoId => {
         return <TodoListItem key={todoId} id={todoId}/>
     })
+
+    useEffect(() => {
+        if (todoIds.length === 0) {
+            dispatch(fetchTodos({status: stateStatus, colors}))
+        }
+    }, [todoIds.length])
 
     return (
         <div>
@@ -21,12 +25,10 @@ const TodoList = () => {
                 <div className='todo-list'>
                     <div className='loader'></div>
                 </div>
-            ) : status === 'failed' ? (
-                <div className='todo-list'>
-                    <h2>Todos Not Found!</h2>
-                </div>
             ) : (
-                <ul className='todo-list'>{renderedListItem}</ul>
+                <ul className='todo-list'>
+                    {renderedListItem}
+                </ul>
             )}
         </div>
     )

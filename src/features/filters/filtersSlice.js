@@ -29,7 +29,6 @@ export const filtersSlice = createSlice({
                 }
                 break
                 case 'removed': {
-                    console.log('remove')
                     state.colors = state.colors.filter(existingClolor => existingClolor !== color)
                 }
                 break

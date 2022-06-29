@@ -84,6 +84,8 @@ const Footer = () => {
   const todoIds = useSelector(selectTodoIds)
 
   const completesTodoIds = useSelector(selectCompletedTodoIds)
+  const disableClear = completesTodoIds.length === 0 ? true : false
+  const disableMark = completesTodoIds.length === todoIds.length ? true : false
 
   const todosRemaining = todos.filter(todo => !todo.completed).length
   const {status, colors} = useSelector(state => state.filters)
@@ -103,8 +105,8 @@ const Footer = () => {
 
   const handleClearCompleted = async () => {
     await dispatch(markOrClear({todoIds: completesTodoIds, action: 'clear-completed'}))
-    await dispatch(fetchTodos({}))
-    // dispatch(clearAllCompleted())
+    dispatch(clearAllCompleted())
+    dispatch(fetchTodos({status, colors}))
   }
 
   useEffect(() => {
@@ -115,10 +117,10 @@ const Footer = () => {
     <footer className="footer">
       <div className="actions">
         <h5>Actions</h5>
-        <button className="button" onClick={handleMarkAllCompleted}>
+        <button className="button" onClick={handleMarkAllCompleted} disabled={disableMark}>
           Mark All Completed
         </button>
-        <button className="button" onClick={handleClearCompleted}>
+        <button className="button" onClick={handleClearCompleted} disabled={disableClear}>
           Clear Completed
         </button>
       </div>
