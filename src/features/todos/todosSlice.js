@@ -12,51 +12,56 @@ const initialState = todosAdapter.getInitialState({
 // fetch todos with filters
 export const fetchTodos = createAsyncThunk(
     'todos/fetchTodos',
-    async ({link, status, colors}) => {
+    async ({link, filterStatus, colors}, {rejectWithValue, fulfillWithValue}) => {
         const tempUrl = link ?
             link + '&pageSize=3&sortBy=dateDesc' :
             `http://localhost:8000/api/todos?page=1&pageSize=3&sortBy=dateDesc`
-        const statusParam = status ? `&status=${status}` : ''
+        const statusParam = filterStatus ? `&status=${filterStatus}` : ''
         const colorsParam = colors ? `&colors=${colors}` : ''
         const url = tempUrl + statusParam + colorsParam
-        // console.log('url: ', url)
-        const response = await fetch(url)
-        if (!response.ok) {
-            throw new Error('Todos Not Found!')
+        console.log('url: ', url)
+
+        try {
+            const response = await fetch(url)
+            const data = await response.json()
+            if (!response.ok) {
+                return rejectWithValue(data)
+            }
+            return fulfillWithValue(data)
+        } catch (error) {
+            return rejectWithValue(error)
         }
-        return response.json()
     }
 )
 
 export const addTodo = createAsyncThunk(
     'todos/addTodo',
-    async text => {
-        const response = await fetch(`http://localhost:8000/api/todos?text=${text}`, {method: 'POST'})
-        if (!response.ok) {
-            throw new Error('Add todo failed!')
+    async (text, {rejectWithValue, fulfillWithValue}) => {
+        const formBody = encode({text: text})
+        try {
+            const response = await fetch(`http://localhost:8000/api/todos`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
+                body: formBody
+            })
+            const data = await response.json()
+            if (!response.ok) {
+                return rejectWithValue(data)
+            }
+            return fulfillWithValue(data)
+        } catch (error) {
+            return rejectWithValue(error)
         }
-        return response.json()
     }
 )
 
 export const updateTodo = createAsyncThunk(
     'todos/updateTodo',
-    async ({id, completed, color}, {rejectWithValue}) => {
-        let body
-        if (completed !== undefined && color) {
-            body = {
-                completed: !completed,
-                color
-            }
-        } else if (completed === undefined) {
-            body = {color}
-        } else if (color === undefined) {
-            body = {completed: !completed}
-        } else {
-            body = null
-        }
-        body = {kkk: 'kkk'}
-        console.log('body: ', body)
+    async ({id, completed, color}, {rejectWithValue, fulfillWithValue}) => {
+        const body = {}
+        if (completed !== undefined) Object.assign(body, {completed: !completed})
+        if (color !== undefined) Object.assign(body, {color}) 
+
         const formBody = encode(body)
         const url = `http://localhost:8000/api/todos/${id}`
         console.log('url: ', url)
@@ -67,12 +72,12 @@ export const updateTodo = createAsyncThunk(
                 headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
                 body: formBody
             })
+            const message = await response.json()
             if (!response.ok) {
-                console.log('RESPONSE: ', response)
+                return rejectWithValue(message)
             }
-            return response.json()
+            return fulfillWithValue(message)
         } catch (error) {
-            console.log('ERROR: ', error)
             return rejectWithValue(error)
         }
     }
@@ -80,31 +85,39 @@ export const updateTodo = createAsyncThunk(
 
 export const deleteTodo = createAsyncThunk(
     'todos/deleteTodo',
-    async todoId => {
+    async (todoId, {rejectWithValue, fulfillWithValue}) => {
         const url = `http://localhost:8000/api/todos/${todoId}`
-        const response = await fetch(url, {method: 'DELETE'})
-        if (!response.ok) {
-            throw new Error('Delete todo failed!')
+        try {
+            const response = await fetch(url, {method: 'DELETE'})
+            const data = await response.json()
+            if (!response.ok) {
+                return rejectWithValue(data)
+            }
+            return fulfillWithValue(data)
+        } catch (error) {
+            return rejectWithValue(error)
         }
-        return response.json()
     }
 )
 
 export const markOrClear = createAsyncThunk(
     'todos/markOrClear',
-    async ({todoIds, action}) => {
+    async ({todoIds, action}, {rejectWithValue, fulfillWithValue}) => {
         const tempUrl = 'http://localhost:8000/api/todos/'
-        const idParam = todoIds.length > 0 ? `?ids=${todoIds}` : '?ids=-1'
+        const idParam = todoIds.length > 0 ? `?ids=${todoIds}` : '?ids=[]'
         const url = tempUrl + action + idParam
         console.log('URL: ', url)
-        const response = await fetch(url)
-        if (!response.ok) {
-            if (action === 'mark-completed') {
-                throw new Error('Mark all todos failed!')
+
+        try {
+            const response = await fetch(url)
+            const data = await response.json()
+            if (!response.ok) {
+                return rejectWithValue(data)
             }
-            throw new Error('Clear todos failed!')
+            return fulfillWithValue(data)
+        } catch (error) {
+            return rejectWithValue(error)
         }
-        return response.json()
     }
 )
 
@@ -140,7 +153,7 @@ const todosSlice = createSlice({
             .addCase(fetchTodos.rejected, (state, action) => {
                 console.log('message: ', action)
                 state.status = 'failed'
-                state.message = action.error.message
+                state.message = action.payload.message
                 state.meta = {}
                 todosAdapter.removeAll(state)
             })
@@ -151,7 +164,7 @@ const todosSlice = createSlice({
                 todosAdapter.addOne(state, action.payload.data)
             })
             .addCase(addTodo.rejected, (state, action) => {
-                state.message = action.error.message
+                state.message = action.payload.message
             })
 
             .addCase(updateTodo.fulfilled, (state, action) => {
@@ -160,7 +173,7 @@ const todosSlice = createSlice({
             })
             .addCase(updateTodo.rejected, (state, action) => {
                 console.log('message: ', action)
-                state.message = action.error.message
+                state.message = action.payload.message
             })
 
             .addCase(deleteTodo.fulfilled, (state, action) => {
@@ -168,14 +181,14 @@ const todosSlice = createSlice({
                 todosAdapter.removeOne(state, action.payload.data.id)
             })
             .addCase(deleteTodo.rejected, (state, action) => {
-                state.message = action.error.message
+                state.message = action.payload.message
             })
 
             .addCase(markOrClear.fulfilled, (state, action) => {
                 state.message = action.payload.message
             })
             .addCase(markOrClear.rejected, (state, action) => {
-                state.message = action.error.message
+                state.message = action.payload.message
             })
     }
 })

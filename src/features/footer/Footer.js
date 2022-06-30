@@ -23,10 +23,10 @@ const RemainingTodos = ({ count }) => {
   )
 }
 
-const StatusFilter = ({value: status, onChange}) => {
+const StatusFilter = ({value: filterStatus, onChange}) => { //////////////////
   const renderedFilters = Object.keys(StatusFilters).map(key => {
     const value = StatusFilters[key]
-    const className = value === status ? 'selected' : ''
+    const className = value === filterStatus ? 'selected' : ''  //////////////
 
     const handleClick = () => onChange(value)
 
@@ -92,7 +92,7 @@ const Footer = () => {
   const disableMark = completesTodoIds.length === todoIds.length ? true : false
 
   const todosRemaining = todos.filter(todo => !todo.completed).length
-  const {status, colors} = useSelector(state => state.filters)
+  const {filterStatus, colors} = useSelector(state => state.filters)
 
   const onStatusChange = (status) => {
     dispatch(statusFilterChanged(status))
@@ -110,12 +110,12 @@ const Footer = () => {
   const handleClearCompleted = async () => {
     await dispatch(markOrClear({todoIds: completesTodoIds, action: 'clear-completed'}))
     dispatch(clearAllCompleted())
-    dispatch(fetchTodos({status, colors}))
+    dispatch(fetchTodos({filterStatus, colors}))
   }
 
   useEffect(() => {
-    dispatch(fetchTodos({status, colors}))
-  }, [status, colors])
+    dispatch(fetchTodos({filterStatus, colors}))
+  }, [filterStatus, colors])
 
   return (
     <footer className="footer">
@@ -138,7 +138,7 @@ const Footer = () => {
       </div>
 
       <RemainingTodos count={todosRemaining}/>
-      <StatusFilter value={status} onChange={onStatusChange}/>
+      <StatusFilter value={filterStatus} onChange={onStatusChange}/>
       <ColorFilters value={colors} onChange={onColorChange}/>
     </footer>
   )

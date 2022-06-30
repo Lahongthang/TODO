@@ -7,7 +7,7 @@ const Header = () => {
   const [text, setText] = useState('')
   const [status, setStatus] = useState('idle')
 
-  const {status: stateStatus, colors} = useSelector(state => state.filters)
+  const {filterStatus, colors} = useSelector(state => state.filters)
 
   const handleChanged = (e) => {
     setText(e.target.value)
@@ -19,7 +19,7 @@ const Header = () => {
       const trimedText = text.trim()
       setText('')
       await dispatch(addTodo(trimedText))
-      await dispatch(fetchTodos({status: stateStatus, colors}))
+      await dispatch(fetchTodos({filterStatus, colors}))
       setStatus('idle')
     }
   }

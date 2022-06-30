@@ -7,7 +7,7 @@ const TodoList = () => {
     const dispatch = useDispatch()
     const todoIds = useSelector(selectTodoIds)
     const todosStatus = useSelector(state => state.todos.status)
-    const {status: filtersStatus, fetchStatus, colors} = useSelector(state => state.filters)
+    const {filterStatus, fetchStatus, colors} = useSelector(state => state.filters)
 
     const renderedListItem = todoIds.map(todoId => {
         return <TodoListItem key={todoId} id={todoId}/>
@@ -15,13 +15,13 @@ const TodoList = () => {
 
     useEffect(() => {
         if (todoIds.length === 0) {
-            dispatch(fetchTodos({status: filtersStatus, colors}))
+            dispatch(fetchTodos({filterStatus, colors}))
         }
     }, [todoIds.length])
 
     return (
         <div>
-            {todosStatus === 'loading' && fetchStatus === 'loading' ? (
+            {todosStatus === 'loading' || fetchStatus === 'loading' ? (
                 <div className='todo-list'>
                     <div className='loader'></div>
                 </div>

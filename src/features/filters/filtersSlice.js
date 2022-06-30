@@ -1,4 +1,5 @@
 import { createSlice, createEntityAdapter, createAsyncThunk } from "@reduxjs/toolkit"
+import { encode } from "../encode/encode"
 
 export const StatusFilters = {
     All: 'all',
@@ -10,30 +11,46 @@ const filtersAdapter = createEntityAdapter()
 
 const initialState = filtersAdapter.getInitialState({
     fetchStatus: 'idle',
-    status: StatusFilters.All,
-    colors: []
+    filterStatus: StatusFilters.All,
+    colors: [],
+    message: ''
 })
 
 export const fetchColors = createAsyncThunk(
     'colors/fetchColors',
-    async () => {
+    async (a, {rejectWithValue, fulfillWithValue}) => {
         const url = 'http://localhost:8000/api/colors'
-        const response = await fetch(url)
-        if (!response.ok) {
-            throw new Error('Fetch colors failed!')
+        try {
+            const response = await fetch(url)
+            const data = await response.json()
+            if (!response.ok) {
+                return rejectWithValue(data)
+            }
+            return fulfillWithValue(data)
+        } catch (error) {
+            return rejectWithValue(error)
         }
-        return response.json()
     }
 )
 export const addColor = createAsyncThunk(
     'colors/addColor',
-    async ({name}) => {
-        const url = `http://localhost:8000/api/colors?name=${name}`
-        const response = await fetch(url, {method: 'POST'})
-        if (!response.ok) {
-            throw new Error('Add color failed!')
+    async ({name}, {rejectWithValue, fulfillWithValue}) => {
+        const formBody = encode({name: name})
+        const url = `http://localhost:8000/api/colors`
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
+                body: formBody
+            })
+            const data = await response.json()
+            if (!response.ok) {
+                return rejectWithValue(data)
+            }
+            return fulfillWithValue(data)
+        } catch (error) {
+            return rejectWithValue(error)
         }
-        return response.json()
     }
 )
 
@@ -42,7 +59,7 @@ export const filtersSlice = createSlice({
     initialState,
     reducers: {
         statusFilterChanged(state, action) {
-            state.status = action.payload
+            state.filterStatus = action.payload
         },
         colorFilterChanged(state, action) {
             let {color, changeType} = action.payload
@@ -70,18 +87,21 @@ export const filtersSlice = createSlice({
             })
             .addCase(fetchColors.fulfilled, (state, action) => {
                 state.fetchStatus = 'idle'
+                state.message = 'fetch colors succeed!'
                 filtersAdapter.setAll(state, action.payload.data)
             })
-            .addCase(fetchColors.rejected, (state) => {
+            .addCase(fetchColors.rejected, (state, action) => {
                 state.fetchStatus = 'failed'
                 filtersAdapter.removeAll(state)
+                state.message = action.payload.message
             })
 
             .addCase(addColor.fulfilled, (state, action) => {
+                state.message = action.payload.message
                 filtersAdapter.addOne(state, action.payload.data)
             })
             .addCase(addColor.rejected, (state, action) => {
-
+                state.message = action.payload.message
             })
     }
 })
