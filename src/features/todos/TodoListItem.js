@@ -1,3 +1,4 @@
+import {unwrapResult} from '@reduxjs/toolkit'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectTodoById, updateTodo, deleteTodo } from './todosSlice'
 import { ReactComponent as TimesSolid } from './times-solid.svg'
@@ -19,7 +20,7 @@ const TodoListItem = ({ id }) => {
   ))
 
   const handleChanged = () => {
-    dispatch(updateTodo({id, completed}))
+      dispatch(updateTodo({id, completed}))
   }
 
   const handleColorChanged = (e) => {

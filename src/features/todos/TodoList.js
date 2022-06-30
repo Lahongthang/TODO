@@ -6,8 +6,8 @@ import { selectTodoIds, selectEntities, fetchTodos } from './todosSlice'
 const TodoList = () => {
     const dispatch = useDispatch()
     const todoIds = useSelector(selectTodoIds)
-    const status = useSelector(state => state.todos.status)
-    const {status: stateStatus, colors} = useSelector(state => state.filters)
+    const todosStatus = useSelector(state => state.todos.status)
+    const {status: filtersStatus, fetchStatus, colors} = useSelector(state => state.filters)
 
     const renderedListItem = todoIds.map(todoId => {
         return <TodoListItem key={todoId} id={todoId}/>
@@ -15,13 +15,13 @@ const TodoList = () => {
 
     useEffect(() => {
         if (todoIds.length === 0) {
-            dispatch(fetchTodos({status: stateStatus, colors}))
+            dispatch(fetchTodos({status: filtersStatus, colors}))
         }
     }, [todoIds.length])
 
     return (
         <div>
-            {status === 'loading' ? (
+            {todosStatus === 'loading' && fetchStatus === 'loading' ? (
                 <div className='todo-list'>
                     <div className='loader'></div>
                 </div>

@@ -12,7 +12,6 @@ const Pagination = () => {
     if (links?.length < 2) {
         return
     }
-    console.log('LENGTH: ', links?.length)
 
     const renderedPag = links?.map((link, index) => {
         const className = link.active ? 'selected pag-button' : 'pag-button'

@@ -1,4 +1,5 @@
 import {createEntityAdapter, createSlice, createAsyncThunk, createSelector} from '@reduxjs/toolkit'
+import { encode } from '../encode/encode'
 
 const todosAdapter = createEntityAdapter()
 
@@ -40,17 +41,40 @@ export const addTodo = createAsyncThunk(
 
 export const updateTodo = createAsyncThunk(
     'todos/updateTodo',
-    async ({id, completed, color}) => {
-        const completedParam = completed !== undefined ? `completed=${!completed}` : ''
-        const colorParam = color ? `color=${color}` : ''
-        let tempUrl = `http://localhost:8000/api/todos/${id}?`
-        const url = tempUrl + completedParam + colorParam
-        console.log('url: ', url)
-        const response = await fetch(url, {method: 'PUT'})
-        if (!response.ok) {
-            throw new Error('Update todo failed!')
+    async ({id, completed, color}, {rejectWithValue}) => {
+        let body
+        if (completed !== undefined && color) {
+            body = {
+                completed: !completed,
+                color
+            }
+        } else if (completed === undefined) {
+            body = {color}
+        } else if (color === undefined) {
+            body = {completed: !completed}
+        } else {
+            body = null
         }
-        return response.json()
+        body = {kkk: 'kkk'}
+        console.log('body: ', body)
+        const formBody = encode(body)
+        const url = `http://localhost:8000/api/todos/${id}`
+        console.log('url: ', url)
+
+        try {
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
+                body: formBody
+            })
+            if (!response.ok) {
+                console.log('RESPONSE: ', response)
+            }
+            return response.json()
+        } catch (error) {
+            console.log('ERROR: ', error)
+            return rejectWithValue(error)
+        }
     }
 )
 
@@ -114,6 +138,7 @@ const todosSlice = createSlice({
                 todosAdapter.setAll(state, action.payload.data)
             })
             .addCase(fetchTodos.rejected, (state, action) => {
+                console.log('message: ', action)
                 state.status = 'failed'
                 state.message = action.error.message
                 state.meta = {}
@@ -134,6 +159,7 @@ const todosSlice = createSlice({
                 todosAdapter.upsertOne(state, action.payload.data)
             })
             .addCase(updateTodo.rejected, (state, action) => {
+                console.log('message: ', action)
                 state.message = action.error.message
             })
 

@@ -10,8 +10,8 @@ import {
   clearAllCompleted
 } from '../todos/todosSlice'
 import { lowerCase } from '../filters/colors'
-import { StatusFilters, colorFilterChanged, statusFilterChanged } from '../filters/filtersSlice'
-import { selectAllColors } from '../colors/colorsSlice'
+import { StatusFilters, colorFilterChanged, statusFilterChanged, selectAllColors } from '../filters/filtersSlice'
+// import { selectAllColors } from '../colors/colorsSlice'
 
 const RemainingTodos = ({ count }) => {
   const suffix = count < 2 ? '' : 's'

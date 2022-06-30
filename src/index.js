@@ -9,7 +9,7 @@ import reportWebVitals from './reportWebVitals';
 
 import store from './store';
 import {fetchTodos} from './features/todos/todosSlice'
-import {fetchColors} from './features/colors/colorsSlice'
+import {fetchColors} from './features/filters/filtersSlice'
 
 store.dispatch(fetchTodos({}))
 store.dispatch(fetchColors())
