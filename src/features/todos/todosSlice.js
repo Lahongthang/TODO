@@ -1,5 +1,6 @@
 import {createEntityAdapter, createSlice, createAsyncThunk, createSelector} from '@reduxjs/toolkit'
 import { encode } from '../encode/encode'
+import { capitalize } from '../filters/colors'
 
 const baseUrl = 'http://localhost:8000/api/'
 
@@ -67,7 +68,7 @@ export const updateTodo = createAsyncThunk(
     async ({id, completed, color}, {rejectWithValue, fulfillWithValue}) => {
         const body = {}
         if (completed !== undefined) Object.assign(body, {completed: !completed})
-        if (color !== undefined) Object.assign(body, {color}) 
+        if (color !== undefined) Object.assign(body, {color})
 
         const formBody = encode(body)
         console.log('formBody: ', formBody)

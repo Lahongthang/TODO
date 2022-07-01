@@ -1,6 +1,7 @@
 import { createSlice, createEntityAdapter, createAsyncThunk } from "@reduxjs/toolkit"
 import { encode } from "../encode/encode"
 import { headers } from "../todos/todosSlice"
+import { capitalize } from "./colors"
 
 export const StatusFilters = {
     All: 'all',
@@ -36,7 +37,7 @@ export const fetchColors = createAsyncThunk(
 export const addColor = createAsyncThunk(
     'colors/addColor',
     async (name, {rejectWithValue, fulfillWithValue}) => {
-        const formBody = encode({name: name})
+        const formBody = encode({name: capitalize(name)})
         const url = `http://localhost:8000/api/colors`
         try {
             const response = await fetch(url, {
@@ -62,6 +63,29 @@ export const deleteColor = createAsyncThunk(
         console.log('URL: ', url)
         try {
             const response = await fetch(url, {method: 'DELETE', headers: headers})
+            const data = await response.json()
+            if (!response.ok) {
+                return rejectWithValue(data)
+            }
+            return fulfillWithValue(data)
+        } catch (error) {
+            return rejectWithValue(error)
+        }
+    }
+)
+
+export const updateColor = createAsyncThunk(
+    'colors/updateColor',
+    async ({colorId, newName}, {rejectWithValue, fulfillWithValue}) => {
+        const formBody = encode({name: capitalize(newName)})
+        const url = `http://localhost:8000/api/colors/${colorId}`
+        console.log('URL: ', url)
+        try {
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: headers,
+                body: formBody
+            })
             const data = await response.json()
             if (!response.ok) {
                 return rejectWithValue(data)
@@ -128,6 +152,14 @@ export const filtersSlice = createSlice({
                 filtersAdapter.removeOne(state, action.payload.data.id)
             })
             .addCase(deleteColor.rejected, (state, action) => {
+                state.message = action.payload.message
+            })
+
+            .addCase(updateColor.fulfilled, (state, action) => {
+                state.message = 'Update color succeed!'
+                filtersAdapter.upsertOne(state, action.payload.data)
+            })
+            .addCase(updateColor.rejected, (state, action) => {
                 state.message = action.payload.message
             })
     }
