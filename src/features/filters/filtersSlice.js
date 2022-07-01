@@ -1,5 +1,6 @@
 import { createSlice, createEntityAdapter, createAsyncThunk } from "@reduxjs/toolkit"
 import { encode } from "../encode/encode"
+import { headers } from "../todos/todosSlice"
 
 export const StatusFilters = {
     All: 'all',
@@ -21,7 +22,7 @@ export const fetchColors = createAsyncThunk(
     async (a, {rejectWithValue, fulfillWithValue}) => {
         const url = 'http://localhost:8000/api/colors'
         try {
-            const response = await fetch(url)
+            const response = await fetch(url, {headers: headers})
             const data = await response.json()
             if (!response.ok) {
                 return rejectWithValue(data)
@@ -34,13 +35,13 @@ export const fetchColors = createAsyncThunk(
 )
 export const addColor = createAsyncThunk(
     'colors/addColor',
-    async ({name}, {rejectWithValue, fulfillWithValue}) => {
+    async (name, {rejectWithValue, fulfillWithValue}) => {
         const formBody = encode({name: name})
         const url = `http://localhost:8000/api/colors`
         try {
             const response = await fetch(url, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
+                headers: headers,
                 body: formBody
             })
             const data = await response.json()

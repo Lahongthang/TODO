@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import {Link} from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   selectTodos,
@@ -11,7 +12,6 @@ import {
 } from '../todos/todosSlice'
 import { lowerCase } from '../filters/colors'
 import { StatusFilters, colorFilterChanged, statusFilterChanged, selectAllColors } from '../filters/filtersSlice'
-// import { selectAllColors } from '../colors/colorsSlice'
 
 const RemainingTodos = ({ count }) => {
   const suffix = count < 2 ? '' : 's'
@@ -23,10 +23,10 @@ const RemainingTodos = ({ count }) => {
   )
 }
 
-const StatusFilter = ({value: filterStatus, onChange}) => { //////////////////
+const StatusFilter = ({value: filterStatus, onChange}) => {
   const renderedFilters = Object.keys(StatusFilters).map(key => {
     const value = StatusFilters[key]
-    const className = value === filterStatus ? 'selected' : ''  //////////////
+    const className = value === filterStatus ? 'selected' : ''
 
     const handleClick = () => onChange(value)
 
@@ -78,6 +78,7 @@ const ColorFilters = ({value: colors, onChange}) => {
     <div className="filters colorFilters">
       <h5>Filter by Color</h5>
       <form className="colorSelection">{renderedColors}</form>
+      <Link to='/modifyColors'>Modify Colors</Link>
     </div>
   )
 }

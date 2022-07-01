@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { addTodo, fetchTodos, selectTodos } from '../todos/todosSlice'
+import { addTodo, fetchTodos } from '../todos/todosSlice'
 
 const Header = () => {
   const dispatch = useDispatch()

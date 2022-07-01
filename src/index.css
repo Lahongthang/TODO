@@ -533,6 +533,24 @@ input[type='checkbox'] {
   border-color: rgba(175, 47, 47, 0.1);
 }
 
+
+.filters.colorFilters button {
+  color: inherit;
+  margin: 3px;
+  padding: 3px 7px;
+  text-decoration: none;
+  border: 2px solid transparent;
+  border-radius: 3px;
+  cursor: pointer;
+  background: unset !important;
+}
+
+.filters.colorFilters button:hover {
+  border-color: rgba(175, 47, 47, 0.1);
+}
+
+
+
 .filters.statusFilters li button.selected {
   border-color: rgba(175, 47, 47, 0.3);
 }

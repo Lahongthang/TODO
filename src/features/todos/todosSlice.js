@@ -1,6 +1,13 @@
 import {createEntityAdapter, createSlice, createAsyncThunk, createSelector} from '@reduxjs/toolkit'
 import { encode } from '../encode/encode'
 
+const baseUrl = 'http://localhost:8000/api/'
+
+export const headers = {
+    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    'Accept': 'application/json'
+}
+
 const todosAdapter = createEntityAdapter()
 
 const initialState = todosAdapter.getInitialState({
@@ -22,7 +29,7 @@ export const fetchTodos = createAsyncThunk(
         console.log('url: ', url)
 
         try {
-            const response = await fetch(url)
+            const response = await fetch(url, {headers: headers})
             const data = await response.json()
             if (!response.ok) {
                 return rejectWithValue(data)
@@ -41,7 +48,7 @@ export const addTodo = createAsyncThunk(
         try {
             const response = await fetch(`http://localhost:8000/api/todos`, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
+                headers: headers,
                 body: formBody
             })
             const data = await response.json()
@@ -63,20 +70,22 @@ export const updateTodo = createAsyncThunk(
         if (color !== undefined) Object.assign(body, {color}) 
 
         const formBody = encode(body)
+        console.log('formBody: ', formBody)
+        console.log('type: ', typeof(formBody))
         const url = `http://localhost:8000/api/todos/${id}`
         console.log('url: ', url)
 
         try {
             const response = await fetch(url, {
                 method: 'PUT',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
+                headers: headers,
                 body: formBody
             })
-            const message = await response.json()
+            const data = await response.json()
             if (!response.ok) {
-                return rejectWithValue(message)
+                return rejectWithValue(data)
             }
-            return fulfillWithValue(message)
+            return fulfillWithValue(data)
         } catch (error) {
             return rejectWithValue(error)
         }
@@ -88,7 +97,7 @@ export const deleteTodo = createAsyncThunk(
     async (todoId, {rejectWithValue, fulfillWithValue}) => {
         const url = `http://localhost:8000/api/todos/${todoId}`
         try {
-            const response = await fetch(url, {method: 'DELETE'})
+            const response = await fetch(url, {method: 'DELETE', headers: headers})
             const data = await response.json()
             if (!response.ok) {
                 return rejectWithValue(data)
@@ -109,7 +118,7 @@ export const markOrClear = createAsyncThunk(
         console.log('URL: ', url)
 
         try {
-            const response = await fetch(url)
+            const response = await fetch(url, {headers: headers})
             const data = await response.json()
             if (!response.ok) {
                 return rejectWithValue(data)
@@ -153,7 +162,8 @@ const todosSlice = createSlice({
             .addCase(fetchTodos.rejected, (state, action) => {
                 console.log('message: ', action)
                 state.status = 'failed'
-                state.message = action.payload.message
+                // state.message = action.payload.message
+                state.message = 'Todos not found!'
                 state.meta = {}
                 todosAdapter.removeAll(state)
             })
