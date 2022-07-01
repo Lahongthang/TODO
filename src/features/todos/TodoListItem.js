@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { selectTodoById, updateTodo, deleteTodo } from './todosSlice'
 import { selectAllColors } from '../filters/filtersSlice'
 import { ReactComponent as TimesSolid } from './times-solid.svg'
-import { availableColors, lowerCase } from '../filters/colors'
+import { lowerCase } from '../filters/colors'
 
 const TodoListItem = ({ id }) => {
   const dispatch = useDispatch()

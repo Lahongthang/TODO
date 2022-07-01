@@ -55,6 +55,24 @@ export const addColor = createAsyncThunk(
     }
 )
 
+export const deleteColor = createAsyncThunk(
+    'colors/deleteColor',
+    async (colorId, {rejectWithValue, fulfillWithValue}) => {
+        const url = `http://localhost:8000/api/colors/${colorId}`
+        console.log('URL: ', url)
+        try {
+            const response = await fetch(url, {method: 'DELETE', headers: headers})
+            const data = await response.json()
+            if (!response.ok) {
+                return rejectWithValue(data)
+            }
+            return fulfillWithValue(data)
+        } catch (error) {
+            return rejectWithValue(error)
+        }
+    }
+)
+
 export const filtersSlice = createSlice({
     name: 'filters',
     initialState,
@@ -102,6 +120,14 @@ export const filtersSlice = createSlice({
                 filtersAdapter.addOne(state, action.payload.data)
             })
             .addCase(addColor.rejected, (state, action) => {
+                state.message = action.payload.message
+            })
+
+            .addCase(deleteColor.fulfilled, (state, action) => {
+                state.message = action.payload.message
+                filtersAdapter.removeOne(state, action.payload.data.id)
+            })
+            .addCase(deleteColor.rejected, (state, action) => {
                 state.message = action.payload.message
             })
     }

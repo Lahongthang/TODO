@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import {Link} from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   selectTodos,
@@ -78,7 +77,6 @@ const ColorFilters = ({value: colors, onChange}) => {
     <div className="filters colorFilters">
       <h5>Filter by Color</h5>
       <form className="colorSelection">{renderedColors}</form>
-      <Link to='/modifyColors'>Modify Colors</Link>
     </div>
   )
 }
