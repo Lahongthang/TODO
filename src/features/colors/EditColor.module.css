@@ -32,4 +32,5 @@
 .view .save a {
     float: right;
     text-decoration: none;
+    margin-right: 30px;
 }

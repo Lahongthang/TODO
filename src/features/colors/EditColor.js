@@ -33,6 +33,7 @@ const EditColorForm = () => {
                     to='/colors'
                     onClick={handleSave}
                 >Save</Link>
+                <Link className='button' to='/colors'>Cancel</Link>
             </div>
         </div>
     )

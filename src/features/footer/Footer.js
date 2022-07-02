@@ -47,6 +47,13 @@ const StatusFilter = ({value: filterStatus, onChange}) => {
 
 const ColorFilters = ({value: colors, onChange}) => {
   const colorsObj = useSelector(selectAllColors)
+  colorsObj.sort((first, second) => {
+    if (second.id > first.id) {
+      return -1
+    } else {
+      return 0
+    }
+  })
   const apiColors = colorsObj.map(color => color.name)
 
   const renderedColors = apiColors.map(color => {
@@ -56,8 +63,8 @@ const ColorFilters = ({value: colors, onChange}) => {
       onChange(color, changeType)
     }
     return (
-      <div className='color-details'>
-        <label key={color}>
+      <div key={color} className='color-details'>
+        <label>
           <input
             type='checkbox'
             name={color}
@@ -97,10 +104,16 @@ const Footer = () => {
 
   const onStatusChange = (status) => {
     dispatch(statusFilterChanged(status))
+    dispatch(fetchTodos({filterStatus: status, colors}))
   }
 
   const onColorChange = (color, changeType) => {
     dispatch(colorFilterChanged({color, changeType}))
+    const newColors = changeType === 'added' ?
+      colors.concat(color) :
+      colors.filter(existingColor => existingColor !== color)
+      
+    dispatch(fetchTodos({filterStatus, colors: newColors}))
   }
 
   const handleMarkAllCompleted = async () => {
@@ -113,10 +126,6 @@ const Footer = () => {
     dispatch(clearAllCompleted())
     dispatch(fetchTodos({filterStatus, colors}))
   }
-
-  useEffect(() => {
-    dispatch(fetchTodos({filterStatus, colors}))
-  }, [filterStatus, colors])
 
   return (
     <footer className="footer">

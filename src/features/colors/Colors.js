@@ -8,6 +8,13 @@ import { lowerCase } from '../filters/colors'
 
 const AvailableColors = ({onDelete}) => {
     const colorsObj = useSelector(selectAllColors)
+    colorsObj.sort((first, second) => {
+        if (second.id > first.id) {
+            return -1
+        } else {
+            return 0
+        }
+    })
 
     const renderedColors = colorsObj.map(color => {
         const handleDelete = () => onDelete(color.id)
