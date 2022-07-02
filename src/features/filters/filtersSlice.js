@@ -169,6 +169,8 @@ export const {statusFilterChanged, colorFilterChanged} = filtersSlice.actions
 export const {
     selectAll: selectAllColors,
     selectIds: selectColorIds,
+    selectById: selectColorById,
     selectEntities
 } = filtersAdapter.getSelectors(state => state.filters)
+
 export default filtersSlice.reducer

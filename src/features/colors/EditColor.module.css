@@ -1,0 +1,35 @@
+.view {
+    width: 100%;
+    max-width: 800px;
+    min-width: 500px;
+    overflow: hidden;
+    background: #fff;
+    margin: auto;
+    margin-top: 10vh;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 20%), 0 25px 50px 0 rgb(0 0 0 / 10%);
+}
+
+.view .edit {
+    padding: 16px 16px 16px 60px;
+    border: none;
+    background: rgba(0, 0, 0, 0.003);
+    box-shadow: inset 0 -2px 1px rgb(0 0 0 / 3%);
+    position: relative;
+    margin: 0;
+    width: 100%;
+    font-size: 24px;
+    font-family: inherit;
+    font-weight: inherit;
+    line-height: 1.4em;
+    color: inherit;
+}
+
+.view .save {
+    margin: 30px;
+    overflow: hidden;
+}
+
+.view .save a {
+    float: right;
+    text-decoration: none;
+}

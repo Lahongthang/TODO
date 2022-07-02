@@ -3,7 +3,8 @@ import {Routes, Route} from 'react-router-dom'
 import Navigation from './features/navigation/Navigation'
 import Main from './features/todos/Main'
 import Notification from './features/notifications/Notification'
-import ModifyColors from './features/colors/ModifyColors'
+import Colors from './features/colors/Colors'
+import EditColor from './features/colors/EditColor'
 
 function App() {
 
@@ -25,7 +26,8 @@ function App() {
               </>
             }
           />
-          <Route path='/modifyColors' element={<ModifyColors/>}/>
+          <Route path='/colors' element={<Colors/>}/>
+          <Route path='/colors/:colorId' element={<EditColor/>}/>
         </Routes>
       </div>
   )

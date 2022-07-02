@@ -56,21 +56,23 @@ const ColorFilters = ({value: colors, onChange}) => {
       onChange(color, changeType)
     }
     return (
-      <label key={color}>
-        <input
-          type='checkbox'
-          name={color}
-          checked={checked}
-          onChange={handleChange}
-        />
-        <span
-          className="color-block"
-          style={{
-            backgroundColor: lowerCase(color),
-          }}
-        ></span>
-        {color}
-      </label>
+      <div className='color-details'>
+        <label key={color}>
+          <input
+            type='checkbox'
+            name={color}
+            checked={checked}
+            onChange={handleChange}
+          />
+          <span
+            className="color-block"
+            style={{
+              backgroundColor: lowerCase(color),
+            }}
+          ></span>
+          {color}
+        </label>
+      </div>
     )
   })
   return (

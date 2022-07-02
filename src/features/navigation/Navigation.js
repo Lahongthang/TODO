@@ -1,13 +1,13 @@
 import {useState} from 'react'
-import {Link} from 'react-router-dom'
+import {Link, NavLink} from 'react-router-dom'
 
 const Navigation = () => {
     return (
         <nav>
             <div className="navContent">
                 <div className="navLinks">
-                    <Link to='/'>Home</Link>
-                    <Link to='/modifyColors'>Modify Colors</Link>
+                    <NavLink className='nav-link' to='/'>Home</NavLink>
+                    <NavLink className='nav-link' to='/colors'>Colors</NavLink>
                 </div>
             </div>
         </nav>
