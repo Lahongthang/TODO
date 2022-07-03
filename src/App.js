@@ -2,7 +2,6 @@ import React from 'react'
 import {Routes, Route} from 'react-router-dom'
 import Navigation from './features/navigation/Navigation'
 import Main from './features/todos/Main'
-import Notification from './features/notifications/Notification'
 import Colors from './features/colors/Colors'
 import EditColor from './features/colors/EditColor'
 
@@ -17,15 +16,7 @@ function App() {
         </div>
         <Navigation/>
         <Routes>
-          <Route
-            path='/'
-            element={
-              <>
-                <Notification/>
-                <Main/>
-              </>
-            }
-          />
+          <Route path='/' element={<Main/>}/>
           <Route path='/colors' element={<Colors/>}/>
           <Route path='/colors/:colorId' element={<EditColor/>}/>
         </Routes>

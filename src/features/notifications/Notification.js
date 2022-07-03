@@ -1,9 +1,18 @@
-import {useSelector} from 'react-redux'
+import {useEffect} from 'react'
+import {useDispatch} from 'react-redux'
+import { resetMessage } from '../todos/todosSlice'
 
-const Notification = () => {
-    const message = useSelector(state => state.todos.message)
+const Notification = ({message}) => {
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        setTimeout(() => {
+            dispatch(resetMessage())
+        }, 3000)
+    }, [])
+
     return (
-        <div className='notification'>
+        <div className='action-message'>
             {message}
         </div>
     )

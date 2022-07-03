@@ -147,6 +147,9 @@ const todosSlice = createSlice({
                     state.ids = state.ids.filter(id => id !== entity.id)
                 } 
             })
+        },
+        resetMessage(state) {
+            state.message = ''
         }
     },
     extraReducers: (builder) => {
@@ -204,7 +207,7 @@ const todosSlice = createSlice({
     }
 })
 
-export const {markAllCompleted, clearAllCompleted} = todosSlice.actions
+export const {markAllCompleted, clearAllCompleted, resetMessage} = todosSlice.actions
 
 export const {
     selectAll: selectTodos,
