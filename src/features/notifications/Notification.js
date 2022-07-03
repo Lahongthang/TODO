@@ -6,9 +6,15 @@ const Notification = ({message}) => {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        setTimeout(() => {
+        const reset = setTimeout(() => {
             dispatch(resetMessage())
         }, 3000)
+
+        //clean up function
+        return () => {
+            console.log('clean');
+            clearTimeout(reset)
+        }
     }, [])
 
     return (
