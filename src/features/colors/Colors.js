@@ -42,8 +42,8 @@ const AvailableColors = ({onDelete}) => {
             <table>
                 <thead>
                     <tr>
-                        <th className={styles.id}>Id</th>
-                        <th className={styles.name}>Color Name</th>
+                        <th className={styles.id}>ID</th>
+                        <th className={styles.name}>Name</th>
                         <th className={styles.edit}>Edit Name</th>
                         <th className={styles.delete}>Delete</th>
                     </tr>
@@ -56,7 +56,7 @@ const AvailableColors = ({onDelete}) => {
     )
 }
 
-const ModifyColors = () => {
+const Colors = () => {
     const dispatch = useDispatch()
     const [text, setText] = useState('')
 
@@ -94,4 +94,4 @@ const ModifyColors = () => {
     )
 }
 
-export default ModifyColors
+export default Colors

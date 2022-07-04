@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import TodoListItem from './TodoListItem'
-import { selectTodoIds, selectEntities, fetchTodos } from './todosSlice'
+import { selectTodoIds, fetchTodos } from './todosSlice'
 
 const TodoList = () => {
     const dispatch = useDispatch()
