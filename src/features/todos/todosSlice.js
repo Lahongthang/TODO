@@ -23,22 +23,18 @@ export const fetchTodos = createAsyncThunk(
     async ({link, filterStatus, colors}, {rejectWithValue, fulfillWithValue}) => {
         const tempUrl = link ?
             link + '&pageSize=3&sortBy=dateDesc' :
-            `http://localhost:8000/api/todos?page=1&pageSize=3&sortBy=dateDesc`
+            `http://localhost:8000/api/todos?page=&pageSize=3&sortBy=dateDesc`
         const statusParam = filterStatus ? `&status=${filterStatus}` : ''
         const colorsParam = colors ? `&colors=${colors}` : ''
         const url = tempUrl + statusParam + colorsParam
         console.log('url: ', url)
 
-        try {
-            const response = await fetch(url, {headers: headers})
-            const data = await response.json()
-            if (!response.ok) {
-                return rejectWithValue(data)
-            }
-            return fulfillWithValue(data)
-        } catch (error) {
-            return rejectWithValue(error)
+        const response = await fetch(url, {headers: headers})
+        const data = await response.json()
+        if (!response.ok) {
+            return rejectWithValue(data)
         }
+        return fulfillWithValue(data)
     }
 )
 
@@ -46,20 +42,16 @@ export const addTodo = createAsyncThunk(
     'todos/addTodo',
     async (text, {rejectWithValue, fulfillWithValue}) => {
         const formBody = encode({text: text})
-        try {
-            const response = await fetch(`http://localhost:8000/api/todos`, {
-                method: 'POST',
-                headers: headers,
-                body: formBody
-            })
-            const data = await response.json()
-            if (!response.ok) {
-                return rejectWithValue(data)
-            }
-            return fulfillWithValue(data)
-        } catch (error) {
-            return rejectWithValue(error)
+        const response = await fetch(`http://localhost:8000/api/todos`, {
+            method: 'POST',
+            headers: headers,
+            body: formBody
+        })
+        const data = await response.json()
+        if (!response.ok) {
+            return rejectWithValue(data)
         }
+        return fulfillWithValue(data)
     }
 )
 
@@ -76,20 +68,16 @@ export const updateTodo = createAsyncThunk(
         const url = `http://localhost:8000/api/todos/${id}`
         console.log('url: ', url)
 
-        try {
-            const response = await fetch(url, {
-                method: 'PUT',
-                headers: headers,
-                body: formBody
-            })
-            const data = await response.json()
-            if (!response.ok) {
-                return rejectWithValue(data)
-            }
-            return fulfillWithValue(data)
-        } catch (error) {
-            return rejectWithValue(error)
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: headers,
+            body: formBody
+        })
+        const data = await response.json()
+        if (!response.ok) {
+            return rejectWithValue(data)
         }
+        return fulfillWithValue(data)
     }
 )
 
@@ -97,16 +85,12 @@ export const deleteTodo = createAsyncThunk(
     'todos/deleteTodo',
     async (todoId, {rejectWithValue, fulfillWithValue}) => {
         const url = `http://localhost:8000/api/todos/${todoId}`
-        try {
-            const response = await fetch(url, {method: 'DELETE', headers: headers})
-            const data = await response.json()
-            if (!response.ok) {
-                return rejectWithValue(data)
-            }
-            return fulfillWithValue(data)
-        } catch (error) {
-            return rejectWithValue(error)
+        const response = await fetch(url, {method: 'DELETE', headers: headers})
+        const data = await response.json()
+        if (!response.ok) {
+            return rejectWithValue(data)
         }
+        return fulfillWithValue(data)
     }
 )
 
@@ -118,16 +102,12 @@ export const markOrClear = createAsyncThunk(
         const url = tempUrl + action + idParam
         console.log('URL: ', url)
 
-        try {
-            const response = await fetch(url, {headers: headers})
+        const response = await fetch(url, {headers: headers})
             const data = await response.json()
-            if (!response.ok) {
-                return rejectWithValue(data)
-            }
-            return fulfillWithValue(data)
-        } catch (error) {
-            return rejectWithValue(error)
+        if (!response.ok) {
+            return rejectWithValue(data)
         }
+        return fulfillWithValue(data)
     }
 )
 

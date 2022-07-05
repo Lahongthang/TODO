@@ -22,37 +22,30 @@ export const fetchColors = createAsyncThunk(
     'colors/fetchColors',
     async (a, {rejectWithValue, fulfillWithValue}) => {
         const url = 'http://localhost:8000/api/colors'
-        try {
-            const response = await fetch(url, {headers: headers})
-            const data = await response.json()
-            if (!response.ok) {
-                return rejectWithValue(data)
-            }
-            return fulfillWithValue(data)
-        } catch (error) {
-            return rejectWithValue(error)
+        const response = await fetch(url, {headers: headers})
+        const data = await response.json()
+        if (!response.ok) {
+            return rejectWithValue(data)
         }
+        return fulfillWithValue(data)
     }
 )
+
 export const addColor = createAsyncThunk(
     'colors/addColor',
     async (name, {rejectWithValue, fulfillWithValue}) => {
         const formBody = encode({name: capitalize(name)})
         const url = `http://localhost:8000/api/colors`
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: headers,
-                body: formBody
-            })
-            const data = await response.json()
-            if (!response.ok) {
-                return rejectWithValue(data)
-            }
-            return fulfillWithValue(data)
-        } catch (error) {
-            return rejectWithValue(error)
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: formBody
+        })
+        const data = await response.json()
+        if (!response.ok) {
+            return rejectWithValue(data)
         }
+        return fulfillWithValue(data)
     }
 )
 
@@ -61,16 +54,12 @@ export const deleteColor = createAsyncThunk(
     async (colorId, {rejectWithValue, fulfillWithValue}) => {
         const url = `http://localhost:8000/api/colors/${colorId}`
         console.log('URL: ', url)
-        try {
-            const response = await fetch(url, {method: 'DELETE', headers: headers})
-            const data = await response.json()
-            if (!response.ok) {
-                return rejectWithValue(data)
-            }
-            return fulfillWithValue(data)
-        } catch (error) {
-            return rejectWithValue(error)
+        const response = await fetch(url, {method: 'DELETE', headers: headers})
+        const data = await response.json()
+        if (!response.ok) {
+            return rejectWithValue(data)
         }
+        return fulfillWithValue(data)
     }
 )
 
@@ -80,20 +69,16 @@ export const updateColor = createAsyncThunk(
         const formBody = encode({name: capitalize(newName)})
         const url = `http://localhost:8000/api/colors/${colorId}`
         console.log('URL: ', url)
-        try {
-            const response = await fetch(url, {
-                method: 'PUT',
-                headers: headers,
-                body: formBody
-            })
-            const data = await response.json()
-            if (!response.ok) {
-                return rejectWithValue(data)
-            }
-            return fulfillWithValue(data)
-        } catch (error) {
-            return rejectWithValue(error)
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: headers,
+            body: formBody
+        })
+        const data = await response.json()
+        if (!response.ok) {
+            return rejectWithValue(data)
         }
+        return fulfillWithValue(data)
     }
 )
 
