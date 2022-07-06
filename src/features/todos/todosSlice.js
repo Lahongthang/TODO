@@ -1,6 +1,5 @@
 import {createEntityAdapter, createSlice, createAsyncThunk, createSelector} from '@reduxjs/toolkit'
 import { encode } from '../encode/encode'
-import { capitalize } from '../filters/colors'
 
 const baseUrl = 'http://localhost:8000/api/'
 
@@ -42,6 +41,7 @@ export const addTodo = createAsyncThunk(
     'todos/addTodo',
     async (text, {rejectWithValue, fulfillWithValue}) => {
         const formBody = encode({text: text})
+
         const response = await fetch(`http://localhost:8000/api/todos`, {
             method: 'POST',
             headers: headers,
